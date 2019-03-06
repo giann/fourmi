@@ -1,3 +1,8 @@
+<p align="center">
+    <img src="https://github.com/giann/fourmi/raw/master/assets/logo.png" alt="fourmi" height="304">
+</p>
+
+
 # fourmi
 🐜 A small taskrunner written in Lua
 

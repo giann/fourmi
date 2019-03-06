@@ -2,7 +2,7 @@ local colors = require "term.colors"
 
 local function banner()
     print(
-        "🐜  Fourmi 0.0.1 (C) 2019 Benoit Giannangeli\n"
+        "🐜  Fourmi 0.0.1 (C) 2019 Benoit Giannangeli"
     )
 end
 
@@ -168,7 +168,9 @@ taskMt = {
     __call = function(self, ...)
         if not self.options.quiet then
             print(
-                colors.green("🐜 Running task `" .. self.name .. "` for " .. table.concat({...}, ", "))
+                colors.green("\n🐜 Running task "
+                    .. colors.bright(colors.blue(self.name))
+                    .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
             )
         end
 
@@ -176,9 +178,13 @@ taskMt = {
 
         if not self.options.quiet then
             print(
-                "Task `" .. self.name .. "` over with "
+                "\tTask " .. colors.bright(colors.blue(self.name)) .. " over with "
                 .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
             )
+
+            for _, res in ipairs(results) do
+                print("\t\t→ " .. colors.dim(colors.cyan(tostring(res))))
+            end
         end
 
         return table.unpack(results)
