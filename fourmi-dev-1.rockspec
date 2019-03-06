@@ -27,6 +27,5 @@ build = {
 
 dependencies = {
     "lua >= 5.3",
-    "sirocco >= 0.0.1-5",
-    "argparse >= 0.6.0-1",
+    "lua-term >= 0.7-1",
 }

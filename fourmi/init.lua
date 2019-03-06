@@ -1,5 +1,11 @@
 local colors = require "term.colors"
 
+local function banner()
+    print(
+        "🐜  Fourmi 0.0.1 (C) 2019 Benoit Giannangeli\n"
+    )
+end
+
 local function sh(program, ...)
     local arguments = {...}
     for i, arg in ipairs(arguments) do
@@ -223,5 +229,6 @@ taskMt = {
 
 return {
     task = task,
-    sh   = sh
+    sh   = sh,
+    banner = banner
 }

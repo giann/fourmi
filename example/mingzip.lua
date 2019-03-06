@@ -70,6 +70,8 @@ local gzip = task "gzip"
         end))
     end)
 
+fourmi.banner()
+
 local path = ({...})[1]
 
 return (
