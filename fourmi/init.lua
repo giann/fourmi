@@ -69,7 +69,7 @@ taskMt = {
             function(self, ...)
                 return parallel({task1.run, task2.run}, ...)
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- t1 .. t2: t1 then t2
@@ -80,7 +80,7 @@ taskMt = {
                 return task1(...),
                     task2(...)
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- t1 & t2: t2 if t1 succeeds
@@ -94,7 +94,7 @@ taskMt = {
                     return result1, task2(...)
                 end
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- t1 | t2: t2 only if t1 fails
@@ -104,7 +104,7 @@ taskMt = {
             function(self, ...)
                 return task1(...) or task2(...)
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- t1 >> t2: t1 output to t2 input
@@ -114,7 +114,7 @@ taskMt = {
             function(self, ...)
                 return task2(task1(...))
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- t2 << t1: same
@@ -131,7 +131,7 @@ taskMt = {
 
                 return #t1Res > 0 and task2(table.unpack(t1Res))
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- t1 * t2: do t2 for all output of t1
@@ -155,7 +155,7 @@ taskMt = {
 
                 return table.unpack(results)
             end
-        )
+        ):option("quiet", true)
     end,
 
     -- Run the task
@@ -200,7 +200,20 @@ taskMt = {
             end
 
             return self
-        end
+        end,
+
+        -- Aliases
+        opt = function(self, ...)
+            return self:option(...)
+        end,
+
+        perf = function(self, ...)
+            return self:perform(...)
+        end,
+
+        desc = function(self, ...)
+            return self:description(...)
+        end,
     },
 
     __tostring = function(self)

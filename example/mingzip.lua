@@ -75,14 +75,14 @@ local path = ({...})[1]
 return (
     ls
     *
-    (filter:option{
-        pattern = "%.lua$",
-        quiet = true
-    }
-        ~ (prefix:option {
-            prefix = path .. "/",
+    (filter:opt {
+            pattern = "%.lua$",
             quiet = true
         }
-            >> minify:option("out", os.getenv "HOME" .. "/tmp-code")
+        ~ (prefix:opt {
+                prefix = path .. "/",
+                quiet = true
+            }
+            >> minify:opt("out", os.getenv "HOME" .. "/tmp-code")
                 >> gzip))
 )(path)
