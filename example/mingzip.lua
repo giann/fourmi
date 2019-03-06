@@ -1,6 +1,5 @@
 local lfs   = require "lfs"
 local fourmi = require "fourmi"
-local utils = require "fourmi.utils"
 local task  = fourmi.task
 local sh    = fourmi.sh
 
@@ -24,50 +23,40 @@ local prefix = task "prefix"
 
 local minify = task "minify"
     :description "Minify lua files with luamin"
-    :perform(function(self, ...)
-        local minified = {}
+    :perform(function(self, file)
+        local minifiedFile =
+            self.options.out .. "/" .. file:gsub("%.lua$", ".min.lua")
 
-        for _, file in ipairs {...} do
-            local minifiedFile =
-                self.options.out .. "/" .. file:gsub("%.lua$", ".min.lua")
+        local fd = io.open(minifiedFile, "w")
 
-            local fd = io.open(minifiedFile, "w")
-
-            if fd then
-                fd:write(
-                    sh(
-                        "luamin",
-                        "-f", file
-                    )
+        if fd then
+            fd:write(
+                sh(
+                    "luamin",
+                    "-f", file
                 )
+            )
 
-                fd:close()
-            else
-                error("Could not create minified file at: " .. minifiedFile)
-            end
-
-
-            table.insert(minified, minifiedFile)
+            fd:close()
+        else
+            error("Could not create minified file at: " .. minifiedFile)
         end
 
-        return table.unpack(minified)
+        return minifiedFile
     end)
 
 local gzip = task "gzip"
     :description "Zip files"
-    :perform(function(self, ...)
-        for _, file in ipairs {...} do
-            sh(
-                "gzip",
-                "-k",
-                "-f",
-                file
-            )
-        end
+    :perform(function(self, file)
+        sh(
+            "gzip",
+            "-k",
+            "-f",
+            file
+        )
 
-        return table.unpack(utils.table.map({...}, function(_, file)
-            return file .. ".gzip"
-        end))
+
+        return file .. ".gzip"
     end)
 
 fourmi.banner()
