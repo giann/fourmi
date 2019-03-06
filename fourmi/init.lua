@@ -160,16 +160,20 @@ taskMt = {
 
     -- Run the task
     __call = function(self, ...)
-        print(
-            colors.green("🐜 Running task `" .. self.name .. "`...")
-        )
+        if not self.options.quiet then
+            print(
+                colors.green("🐜 Running task `" .. self.name .. "` for " .. table.concat({...}, ", "))
+            )
+        end
 
         local results = {self:run(...)}
 
-        print(
-            "Task `" .. self.name .. "` over with "
-            .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
-        )
+        if not self.options.quiet then
+            print(
+                "Task `" .. self.name .. "` over with "
+                .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
+            )
+        end
 
         return table.unpack(results)
     end,
@@ -188,7 +192,12 @@ taskMt = {
         end,
 
         option = function(self, name, value)
-            self.options[name] = value
+            local options = type(name) == "table"
+                and name or {[name] = value}
+
+            for n, v in pairs(options) do
+                self.options[n] = v
+            end
 
             return self
         end

@@ -60,6 +60,7 @@ local gzip = task "gzip"
             sh(
                 "gzip",
                 "-k",
+                "-f",
                 file
             )
         end
@@ -74,8 +75,14 @@ local path = ({...})[1]
 return (
     ls
     *
-    (filter:option("pattern", "%.lua$")
-        ~ (prefix:option("prefix", path .. "/")
+    (filter:option{
+        pattern = "%.lua$",
+        quiet = true
+    }
+        ~ (prefix:option {
+            prefix = path .. "/",
+            quiet = true
+        }
             >> minify:option("out", os.getenv "HOME" .. "/tmp-code")
                 >> gzip))
 )(path)
