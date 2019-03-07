@@ -16,26 +16,26 @@ local function checkinvalid(condition, message)
     end
 end
 
--- Search for fourmi.plan in current directory
-local fourmi_lua = lfs.attributes "fourmi.plan"
+-- Search for fourmi.plan.lua in current directory
+local fourmi_lua = lfs.attributes "fourmi.plan.lua"
 
 checkinvalid(
     not fourmi_lua or fourmi_lua.mode ~= "file",
-    "Could not find `fourmi.plan` in current directory."
+    "Could not find `fourmi.plan.lua` in current directory."
 )
 
 -- Load it
-local fourmi_fn, err = loadfile "fourmi.plan"
+local fourmi_fn, err = loadfile "fourmi.plan.lua"
 
-checkinvalid(not fourmi_fn, "Could not find parse `fourmi.plan`: " .. tostring(err))
+checkinvalid(not fourmi_fn, "Could not find parse `fourmi.plan.lua`: " .. tostring(err))
 
 -- Run it
 local ok, plan = xpcall(fourmi_fn, debug.traceback)
 
-checkinvalid(not ok, "An error occured while running `fourmi.plan`:\n" .. tostring(plan))
+checkinvalid(not ok, "An error occured while running `fourmi.plan.lua`:\n" .. tostring(plan))
 
 if type(plan) ~= "table" then
-    checkinvalid("`fourmi.plan` should return a table")
+    checkinvalid("`fourmi.plan.lua` should return a table")
 end
 
 -- Build parser

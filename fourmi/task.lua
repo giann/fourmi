@@ -34,7 +34,7 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 & t2: t2 if t1 returns thruthy value
+    -- t1 & t2: t2 if t1 returns truthy value
     __band = function(task1, task2)
         return task("(" .. task1.name .. " & " .. task2.name .. ")")
             :perform(function(self, ...)
