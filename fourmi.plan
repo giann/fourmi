@@ -1,24 +1,29 @@
-local lfs   = require "lfs"
+-- Example fourmi.lua
+
+local lfs    = require "lfs"
 local fourmi = require "fourmi"
-local task  = fourmi.task
-local sh    = fourmi.sh
+local plan   = fourmi.plan
+local task   = fourmi.task
+local sh     = fourmi.sh
+
+-- Define tasks
 
 local ls = task "ls"
     :description "List files in a directory"
     :perform(function(self, dir)
-        return lfs.dir(dir)
+        local items = {}
+
+        for item in lfs.dir(dir) do
+            table.insert(items, dir .. "/" .. item)
+        end
+
+        return table.unpack(items)
     end)
 
 local filter = task "filter"
     :description "Return input if matches pattern"
     :perform(function(self, item)
         return item:match(self.options.pattern or ".*") and item
-    end)
-
-local prefix = task "prefix"
-    :description "Add a prefix to input element"
-    :perform(function(self, element)
-        return (self.options.prefix or "") .. element
     end)
 
 local minify = task "minify"
@@ -59,21 +64,17 @@ local gzip = task "gzip"
         return file .. ".gzip"
     end)
 
-fourmi.banner()
+-- Define plans
 
-local path = ({...})[1]
-
-return (
-    ls
-    *
-    (filter:opt {
-            pattern = "%.lua$",
-            quiet = true
-        }
-        ~ (prefix:opt {
-                prefix = path .. "/",
+return {
+    default = plan "default"
+        :task(
+            ls
+            *
+            (filter:opt {
+                pattern = "%.lua$",
                 quiet = true
-            }
-            >> minify:opt("out", os.getenv "HOME" .. "/tmp-code")
-                >> gzip))
-)(path)
+            } ~ (minify:opt("out", os.getenv "HOME" .. "/tmp-code")
+                    >> gzip))
+        )
+}

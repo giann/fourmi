@@ -1,0 +1,65 @@
+#!/usr/bin/env lua
+
+local colors   = require "term.colors"
+local argparse = require "argparse"
+local lfs      = require "lfs"
+
+print(
+    "🐜  Fourmi 0.0.1 (C) 2019 Benoit Giannangeli"
+)
+
+local function checkinvalid(condition, message)
+    if condition then
+        print(colors.red(message))
+
+        os.exit(1)
+    end
+end
+
+-- Search for fourmi.plan in current directory
+local fourmi_lua = lfs.attributes "fourmi.plan"
+
+checkinvalid(
+    not fourmi_lua or fourmi_lua.mode ~= "file",
+    "Could not find `fourmi.plan` in current directory."
+)
+
+-- Load it
+local fourmi_fn, err = loadfile "fourmi.plan"
+
+checkinvalid(not fourmi_fn, "Could not find parse `fourmi.plan`: " .. tostring(err))
+
+-- Run it
+local ok, plan = xpcall(fourmi_fn, debug.traceback)
+
+checkinvalid(not ok, "An error occured while running `fourmi.plan`:\n" .. tostring(plan))
+
+if type(plan) ~= "table" then
+    checkinvalid("`fourmi.plan` should return a table")
+end
+
+-- Build parser
+local parser = argparse()
+        :name "fourmi"
+        :description "🐜 A small taskrunner written in Lua"
+
+for _, target in pairs(plan) do
+    target:__argdef(parser)
+end
+
+-- Parse arguments
+local arguments = parser:parse()
+
+-- Run first target that matches a key in plan
+for name, target in pairs(plan) do
+    if arguments[name] then
+        target(arguments)
+
+        os.exit()
+    end
+end
+
+checkinvalid(not plan.default, "No matching plan")
+
+-- Or run default target
+plan.default(arguments)

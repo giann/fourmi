@@ -24,5 +24,5 @@ return (
 ```
 
 <p align="center">
-    <img src="https://github.com/giann/fourmi/raw/master/example/result.png" alt="fourmi">
+    <img src="https://github.com/giann/fourmi/raw/master/assets/result.png" alt="fourmi">
 </p>

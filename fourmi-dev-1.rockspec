@@ -15,7 +15,9 @@ description = {
 
 build = {
     modules = {
-        ["fourmi"] = "croissant/init.lua",
+        ["fourmi"]      = "croissant/init.lua",
+        ["fourmi.plan"] = "croissant/plan.lua",
+        ["fourmi.task"] = "croissant/task.lua",
     },
     type = "builtin",
     install = {
@@ -28,4 +30,6 @@ build = {
 dependencies = {
     "lua >= 5.3",
     "lua-term >= 0.7-1",
+    "argparse >= 0.6.0-1",
+    "luafilesystem >= 1.7.0-2",
 }
