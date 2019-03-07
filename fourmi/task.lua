@@ -202,4 +202,15 @@ taskMt = {
     end
 }
 
+-- Non operators aliases
+
+taskMt.parallelTo = taskMt.__div
+taskMt.after      = taskMt.__concat
+taskMt.success    = taskMt.__band
+taskMt.failure    = taskMt.__bor
+taskMt.into       = taskMt.__shr
+taskMt.ouput      = taskMt.__bxor
+taskMt.each       = taskMt.__mul
+taskMt.meet       = taskMt.__pow
+
 return task

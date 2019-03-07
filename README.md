@@ -96,3 +96,13 @@ return {
 <p align="center">
     <img src="https://github.com/giann/fourmi/raw/master/assets/result.png" alt="fourmi">
 </p>
+
+
+If you don't want to use operators, you can use their aliases:
+- **`..`**: after
+- **`&`**: success
+- **`|`**: failure
+- **`>>`**: into
+- **`~`**: ouput
+- **`*`**: each
+- **`^`**: meet
