@@ -16,7 +16,7 @@ local planMt = {
             error("Task is undefined for plan " .. self.name)
         end
 
-        local results = {self.__task(self:processArgs(arguments))}
+        local results = {self.__task(table.unpack(arguments.arguments or {}))}
 
         if not arguments.quiet then
             print(
@@ -33,19 +33,8 @@ local planMt = {
 
     __index = {
 
-        processArgs = function(self, arguments)
-            -- Assume it's the default definition
-            return table.unpack(arguments.arguments or {})
-        end,
-
         task = function(self, task)
             self.__task = task
-
-            return self
-        end,
-
-        argdef = function(self, argdef)
-            self.__argdef = argdef
 
             return self
         end,
@@ -57,10 +46,6 @@ local planMt = {
 local function plan(name)
     return setmetatable({
         name = name,
-        __argdef = function(self, parser)
-            parser:argument "arguments"
-                :args "*"
-        end,
     }, planMt)
 end
 

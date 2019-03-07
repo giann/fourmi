@@ -43,9 +43,14 @@ local parser = argparse()
         :name "fourmi"
         :description "🐜 A small taskrunner written in Lua"
 
-for _, target in pairs(plan) do
-    target:__argdef(parser)
-end
+-- Plan argument
+parser:argument "plan"
+    :description "Plan to execute"
+    :args(1)
+
+parser:argument "arguments"
+    :description "Plan's arguments"
+    :args "*"
 
 -- Parse arguments
 local arguments = parser:parse()
@@ -58,7 +63,7 @@ for _, target in ipairs(plan) do
         defaultPlan = target
     end
 
-    if arguments[target.name] then
+    if arguments.plan == target.name then
         target(arguments)
 
         os.exit()
@@ -68,4 +73,10 @@ end
 checkinvalid(not defaultPlan, "No matching plan")
 
 -- Or run default target
+
+-- Plan argument is now part of default plan's arguments
+if arguments.plan then
+    table.insert(arguments.arguments, 1, arguments.plan)
+end
+
 defaultPlan(arguments)

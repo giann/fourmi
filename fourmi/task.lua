@@ -34,7 +34,7 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 & t2: t2 if t1 succeeds
+    -- t1 & t2: t2 if t1 returns thruthy value
     __band = function(task1, task2)
         return task("(" .. task1.name .. " & " .. task2.name .. ")")
             :perform(function(self, ...)
@@ -47,7 +47,7 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 | t2: t2 only if t1 fails
+    -- t1 | t2: t2 only if t1 returns falsy value
     __bor = function(task1, task2)
         return task("(" .. task1.name .. " | " .. task2.name .. ")")
             :perform(function(self, ...)
@@ -99,6 +99,32 @@ taskMt = {
                 end
 
                 return table.unpack(results)
+            end)
+            :option("quiet", true)
+    end,
+
+    -- t1 ^ (condition): do t1 if condition (expression or function to be evaluated) is met
+    __pow = function(task1, condition)
+        return task(task1.name  .. "^(" .. tostring(condition) .. ")")
+            :perform(function(self, ...)
+                local ok, message
+
+                if type(condition) == "function" then
+                    ok, message = condition(...)
+                else
+                    ok = condition
+                end
+
+                if ok then
+                    return task1(...)
+                else
+                    local args = {}
+                    for _, arg in ipairs {...} do
+                        table.insert(args, tostring(arg))
+                    end
+
+                    print(colors.yellow(table.concat(args, " ") .. " ignored: " .. message))
+                end
             end)
             :option("quiet", true)
     end,
