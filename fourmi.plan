@@ -64,7 +64,7 @@ local gzip = task "gzip"
 -- Define plans
 
 return {
-    default = plan "default"
+    plan "default"
         :task(
             ls:opt("mask", "%.lua$")
             *

@@ -51,15 +51,21 @@ end
 local arguments = parser:parse()
 
 -- Run first target that matches a key in plan
-for name, target in pairs(plan) do
-    if arguments[name] then
+local defaultPlan
+
+for _, target in ipairs(plan) do
+    if target.name == "default" then
+        defaultPlan = target
+    end
+
+    if arguments[target.name] then
         target(arguments)
 
         os.exit()
     end
 end
 
-checkinvalid(not plan.default, "No matching plan")
+checkinvalid(not defaultPlan, "No matching plan")
 
 -- Or run default target
-plan.default(arguments)
+defaultPlan(arguments)
