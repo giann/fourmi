@@ -105,9 +105,11 @@ taskMt = {
 
     -- Run the task
     __call = function(self, ...)
+        local time = os.clock()
+
         if not self.options.quiet then
             print(
-                colors.green("\n🐜 Running task "
+                colors.green("\n🌿 Running task "
                     .. colors.bright(colors.blue(self.name))
                     .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
             )
@@ -117,8 +119,9 @@ taskMt = {
 
         if not self.options.quiet then
             print(
-                "\tTask " .. colors.bright(colors.blue(self.name)) .. " over with "
+                "\tTask " .. colors.bright(colors.blue(self.name)) .. " completed with "
                 .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
+                .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
             )
 
             for _, res in ipairs(results) do

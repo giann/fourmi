@@ -14,16 +14,13 @@ local ls = task "ls"
         local items = {}
 
         for item in lfs.dir(dir) do
-            table.insert(items, dir .. "/" .. item)
+            if not self.options.mask
+                or item:match(self.options.mask) then
+                table.insert(items, dir .. "/" .. item)
+            end
         end
 
         return table.unpack(items)
-    end)
-
-local filter = task "filter"
-    :description "Return input if matches pattern"
-    :perform(function(self, item)
-        return item:match(self.options.pattern or ".*") and item
     end)
 
 local minify = task "minify"
@@ -69,12 +66,9 @@ local gzip = task "gzip"
 return {
     default = plan "default"
         :task(
-            ls
+            ls:opt("mask", "%.lua$")
             *
-            (filter:opt {
-                pattern = "%.lua$",
-                quiet = true
-            } ~ (minify:opt("out", os.getenv "HOME" .. "/tmp-code")
-                    >> gzip))
+            (minify:opt("out", os.getenv "HOME" .. "/tmp-code")
+                    >> gzip)
         )
 }
