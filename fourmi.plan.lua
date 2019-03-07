@@ -98,6 +98,7 @@ local map = task "map"
 
 return {
     plan "default"
+        :description "Minify and gzip lua files"
         :task(
             ls:opt("mask", "%.lua$")
             *

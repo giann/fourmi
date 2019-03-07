@@ -9,6 +9,7 @@ local planMt = {
             print(
                 colors.green("\n🐜 Running plan "
                     .. colors.bright(colors.blue(self.name)))
+                .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
             )
         end
 
@@ -39,7 +40,18 @@ local planMt = {
             return self
         end,
 
-    }
+        description = function(self, description)
+            self.__description = description
+
+            return self
+        end,
+
+        -- Aliases
+        desc = function(self, ...)
+            return self:description(...)
+        end,
+
+    },
 
 }
 

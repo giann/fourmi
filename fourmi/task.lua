@@ -138,6 +138,7 @@ taskMt = {
                 colors.green("\n🌿 Running task "
                     .. colors.bright(colors.blue(self.name))
                     .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
+                .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
             )
         end
 
@@ -160,7 +161,7 @@ taskMt = {
 
     __index = {
         description = function(self, description)
-            self.description = description
+            self.__description = description
 
             return self
         end,
