@@ -1,11 +1,12 @@
 -- Example fourmi.lua
 
-local colors = require "term.colors"
-local lfs    = require "lfs"
-local fourmi = require "fourmi"
-local plan   = fourmi.plan
-local task   = fourmi.task
-local sh     = fourmi.sh
+local colors   = require "term.colors"
+local lfs      = require "lfs"
+local fourmi   = require "fourmi"
+local plan     = fourmi.plan
+local task     = fourmi.task
+local sh       = fourmi.sh
+local outdated = fourmi.outdated
 
 -- Define tasks
 
@@ -30,18 +31,11 @@ local minify = task "minify"
         local minifiedFile =
             self.options.out .. "/" .. file:gsub("%.lua$", ".min.lua")
 
-        local fd = io.open(minifiedFile, "w")
-
-        if fd then
-            fd:write(
-                sh(
+        if not sh(
                     "luamin",
-                    "-f", file
-                )
-            )
-
-            fd:close()
-        else
+                    "-f", file,
+                    ">", minifiedFile
+                ) then
             error("Could not create minified file at: " .. minifiedFile)
         end
 
@@ -105,10 +99,10 @@ return {
             (
                 (minify:opt("out", os.getenv "HOME" .. "/tmp-code") >> gzip)
                     ^ function(file)
-                        local filename = os.getenv "HOME" .. "/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
-
-                        return not lfs.attributes(filename),
-                            filename .. " already present"
+                        return outdated(
+                            file,
+                            os.getenv "HOME" .. "/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
+                        )
                     end
             )
         ),

@@ -1,4 +1,6 @@
 local colors = require "term.colors"
+local lfs    = require "lfs"
+
 local function sh(program, ...)
     local arguments = {...}
     for i, arg in ipairs(arguments) do
@@ -38,8 +40,24 @@ local function sh(program, ...)
     end
 end
 
+local function outdated(original, target)
+    if original and target then
+        local originalAttr = lfs.attributes(original)
+        local targetAttr = lfs.attributes(target)
+
+        return not targetAttr or originalAttr.change > targetAttr.change,
+            target .. " already present and up-to-date"
+    elseif original then
+        return not lfs.attributes(original),
+            original .. " already present"
+    end
+end
+
 return {
     task   = require "fourmi.task",
     plan   = require "fourmi.plan",
-    sh     = sh,
+
+    -- Core helpers, tasks
+    sh       = sh,
+    outdated = outdated
 }

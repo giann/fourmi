@@ -69,10 +69,10 @@ return {
                 (minify:opt("out", os.getenv "HOME" .. "/tmp-code") >> gzip)
                     -- Only if gzip file are not already there
                     ^ function(file)
-                        local filename = os.getenv "HOME" .. "/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
-
-                        return not lfs.attributes(filename),
-                            filename .. " already present"
+                        return outdated(
+                            file,
+                            os.getenv "HOME" .. "/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
+                        )
                     end
             )
         ),
