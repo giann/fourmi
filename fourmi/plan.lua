@@ -1,7 +1,18 @@
+---
+-- Plan module
+-- @classmod plan
+-- @author Benoit Giannangeli
+-- @license MIT
+-- @copyright Benoit Giannangeli 2019
+
 local colors = require "term.colors"
 
 local planMt = {
 
+    ---
+    -- Run the plan
+    -- @tparam plan self
+    -- @tparam table arguments List of arguments
     __call = function(self, arguments)
         local time = os.clock()
 
@@ -34,12 +45,20 @@ local planMt = {
 
     __index = {
 
+        ---
+        -- Set plan's task
+        -- @tparam plan self
+        -- @tparam task task
         task = function(self, task)
             self.__task = task
 
             return self
         end,
 
+        ---
+        -- Set plan's description
+        -- @tparam plan self
+        -- @tparam string description
         description = function(self, description)
             self.__description = description
 

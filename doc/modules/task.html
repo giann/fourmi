@@ -1,0 +1,352 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/fourmi.html">fourmi</a></li>
+  <li><strong>task</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>task</code></h1>
+<p>Task module</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Copyright</strong>: Benoit Giannangeli 2019</li>
+        <li><strong>License</strong>: MIT</li>
+        <li><strong>Author</strong>: Benoit Giannangeli</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#__div">__div (task1, task2)</a></td>
+	<td class="summary">t1 / t2: t1 in parallel of t2</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__concat">__concat (task1, task2)</a></td>
+	<td class="summary">t1 ..</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__band">__band (task1, task2)</a></td>
+	<td class="summary">t1 & t2: t2 if t1 returns truthy value</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__bor">__bor (task1, task2)</a></td>
+	<td class="summary">t1 | t2: t2 only if t1 returns falsy value</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__shr">__shr (task1, task2)</a></td>
+	<td class="summary">t1 >> t2: t1 output to t2 input</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__shl">__shl (task2, task1)</a></td>
+	<td class="summary">t2 << t1: same</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__bxor">__bxor (task1, task2)</a></td>
+	<td class="summary">t1 ~ t2: if t1 has output, give it to t2</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__mul">__mul (task1, task2)</a></td>
+	<td class="summary">t1 * t2: do t2 for all output of t1</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__pow">__pow (task1, condition)</a></td>
+	<td class="summary">t1 ^ (condition): do t1 if condition (expression or function to be evaluated) is met</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#__call">__call (self, ...)</a></td>
+	<td class="summary">Run the task</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "__div"></a>
+    <strong>__div (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 / t2: t1 in parallel of t2
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__concat"></a>
+    <strong>__concat (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 ..  t2: t1 then t2
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__band"></a>
+    <strong>__band (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 & t2: t2 if t1 returns truthy value
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__bor"></a>
+    <strong>__bor (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 | t2: t2 only if t1 returns falsy value
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__shr"></a>
+    <strong>__shr (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 >> t2: t1 output to t2 input
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__shl"></a>
+    <strong>__shl (task2, task1)</strong>
+    </dt>
+    <dd>
+    t2 << t1: same
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task2</span>
+
+        </li>
+        <li><span class="parameter">task1</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__bxor"></a>
+    <strong>__bxor (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 ~ t2: if t1 has output, give it to t2
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__mul"></a>
+    <strong>__mul (task1, task2)</strong>
+    </dt>
+    <dd>
+    t1 * t2: do t2 for all output of t1
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__pow"></a>
+    <strong>__pow (task1, condition)</strong>
+    </dt>
+    <dd>
+    t1 ^ (condition): do t1 if condition (expression or function to be evaluated) is met
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+
+        </li>
+        <li><span class="parameter">condition</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "__call"></a>
+    <strong>__call (self, ...)</strong>
+    </dt>
+    <dd>
+    Run the task
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+
+        </li>
+        <li><span class="parameter">...</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2019-03-08 07:45:45 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

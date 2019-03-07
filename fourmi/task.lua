@@ -1,3 +1,10 @@
+---
+-- Task module
+-- @classmod task
+-- @author Benoit Giannangeli
+-- @license MIT
+-- @copyright Benoit Giannangeli 2019
+
 local colors = require "term.colors"
 
 local function parallel(functions, ...)
@@ -6,6 +13,10 @@ end
 
 local taskMt
 
+---
+-- Task constructor
+-- @tparam string name Task's name
+-- @treturn task New task
 local function task(name)
     return setmetatable({
         name = name,
@@ -15,7 +26,12 @@ local function task(name)
 end
 
 taskMt = {
-    -- t1 / t2: t1 in parallel of t2
+    ---
+    -- Runs task1 in parallel of task2
+    -- @todo NYI
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __div = function(task1, task2)
         return task("(" .. task1.name .. " / " .. task2.name .. ")")
             :perform(function(self, ...)
@@ -24,7 +40,11 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 .. t2: t1 then t2
+    ---
+    -- Runs task1 then task2
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __concat = function(task1, task2)
         return task("(" .. task1.name .. " .. " .. task2.name .. ")")
             :perform(function(self, ...)
@@ -34,20 +54,28 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 & t2: t2 if t1 returns truthy value
+    ---
+    -- Runs task2 if task1 returns truthy value
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __band = function(task1, task2)
         return task("(" .. task1.name .. " & " .. task2.name .. ")")
             :perform(function(self, ...)
-                local result1 = task1(...)
+                local resultask1 = task1(...)
 
-                if result1 then
-                    return result1, task2(...)
+                if resultask1 then
+                    return resultask1, task2(...)
                 end
             end)
             :option("quiet", true)
     end,
 
-    -- t1 | t2: t2 only if t1 returns falsy value
+    ---
+    -- Runs task2 only if task1 returns falsy value
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __bor = function(task1, task2)
         return task("(" .. task1.name .. " | " .. task2.name .. ")")
             :perform(function(self, ...)
@@ -56,7 +84,11 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 >> t2: t1 output to t2 input
+    ---
+    -- Pipes task1's output to task2 input
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __shr = function(task1, task2)
         return task("(" .. task1.name .. " >> " .. task2.name .. ")")
             :perform(function(self, ...)
@@ -65,35 +97,47 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t2 << t1: same
+    ---
+    -- Pipes task2's output to task1 input
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __shl = function(task2, task1)
         return task2 >> task1
     end,
 
-    -- t1 ~ t2: if t1 has output, give it to t2
+    ---
+    -- Runs task2 with task1 output if any, otherwise doesn't run task2
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __bxor = function(task1, task2)
         return task("(" .. task1.name .. " ~ " .. task2.name .. ")")
             :perform(function(self, ...)
-                local t1Res = {task1(...)}
+                local task1Res = {task1(...)}
 
-                return #t1Res > 0 and task2(table.unpack(t1Res))
+                return #task1Res > 0 and task2(table.unpack(task1Res))
             end)
             :option("quiet", true)
     end,
 
-    -- t1 * t2: do t2 for all output of t1
+    ---
+    -- Runs task2 for each output of task1
+    -- @tparam task task1
+    -- @tparam task task2
+    -- @treturn task
     __mul = function(task1, task2)
         return task("(" .. task1.name .. " * " .. task2.name .. ")")
             :perform(function(self, ...)
                 local results = {}
 
                 for _, result in ipairs {task1(...)} do
-                    local t2Res = task2(result)
+                    local task2Res = task2(result)
 
-                    if t2Res ~= nil then
+                    if task2Res ~= nil then
                         table.insert(
                             results,
-                            t2Res
+                            task2Res
                         )
                     end
                 end
@@ -103,7 +147,11 @@ taskMt = {
             :option("quiet", true)
     end,
 
-    -- t1 ^ (condition): do t1 if condition (expression or function to be evaluated) is met
+    ---
+    -- Runs task1 if a condition is met
+    -- @tparam task task1
+    -- @tparam boolean|function condition If a function, will be run when resulting task is invoked
+    -- @treturn task
     __pow = function(task1, condition)
         return task(task1.name  .. "^(" .. tostring(condition) .. ")")
             :perform(function(self, ...)
@@ -129,7 +177,10 @@ taskMt = {
             :option("quiet", true)
     end,
 
+    ---
     -- Run the task
+    -- @tparam task self
+    -- @param ... Task input
     __call = function(self, ...)
         local time = os.clock()
 
@@ -160,18 +211,31 @@ taskMt = {
     end,
 
     __index = {
+        ---
+        -- Set task's description
+        -- @tparam task self
+        -- @tparam string description
         description = function(self, description)
             self.__description = description
 
             return self
         end,
 
+        ---
+        -- Set task's action
+        -- @tparam task self
+        -- @tparam string function
         perform = function(self, fn)
             self.run = fn
 
             return self
         end,
 
+        ---
+        -- Set a task's option
+        -- @tparam task self
+        -- @tparam string name Option's name
+        -- @param value Option's value
         option = function(self, name, value)
             local options = type(name) == "table"
                 and name or {[name] = value}
@@ -183,7 +247,6 @@ taskMt = {
             return self
         end,
 
-        -- Aliases
         opt = function(self, ...)
             return self:option(...)
         end,
@@ -203,7 +266,6 @@ taskMt = {
 }
 
 -- Non operators aliases
-
 taskMt.parallelTo = taskMt.__div
 taskMt.after      = taskMt.__concat
 taskMt.success    = taskMt.__band

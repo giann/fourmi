@@ -1,7 +1,25 @@
+---
+-- Main fourmi module
+-- @module fourmi
+-- @author Benoit Giannangeli
+-- @license MIT
+-- @copyright Benoit Giannangeli 2019
+
 local colors = require "term.colors"
 local lfs    = require "lfs"
 
-local function sh(program, ...)
+local fourmi = {
+    task = require "fourmi.task",
+    plan = require "fourmi.plan",
+}
+
+---
+-- Runs a command captures stderr and returns it as error message
+-- @tparam string program command to run
+-- @tparam string ... program arguments
+-- @treturn[1] boolean true if command succeded
+-- @treturn[2] string message in case of failure
+function fourmi.sh(program, ...)
     local arguments = {...}
     for i, arg in ipairs(arguments) do
         local sarg = tostring(arg)
@@ -40,7 +58,11 @@ local function sh(program, ...)
     end
 end
 
-local function outdated(original, target)
+---
+-- Returns true if a file is outdated
+-- @tparam string original If alone checks that it exists
+-- @tparam string target Outdated if not present or older than original
+function fourmi.outdated(original, target)
     if original and target then
         local originalAttr = lfs.attributes(original)
         local targetAttr = lfs.attributes(target)
@@ -53,11 +75,4 @@ local function outdated(original, target)
     end
 end
 
-return {
-    task   = require "fourmi.task",
-    plan   = require "fourmi.plan",
-
-    -- Core helpers, tasks
-    sh       = sh,
-    outdated = outdated
-}
+return fourmi
