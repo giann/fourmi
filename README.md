@@ -6,6 +6,8 @@
 # fourmi
 🐜 A small taskrunner that harnesses the power of Lua's metamethods to easily express flow of tasks.
 
+**Note:** Fourmi is in active development.
+
 ## Installation
 
 Requirements:
@@ -13,7 +15,8 @@ Requirements:
 - luarocks >= 3.0 (_Note: `hererocks -rlatest` will install 2.4, you need to specify it with `-r3.0`_)
 
 ```bash
-luarocks install fourmi
+# Soon
+# luarocks install fourmi
 ```
 
 ## Usage
