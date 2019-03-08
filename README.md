@@ -15,8 +15,7 @@ Requirements:
 - luarocks >= 3.0 (_Note: `hererocks -rlatest` will install 2.4, you need to specify it with `-r3.0`_)
 
 ```bash
-# Soon
-# luarocks install fourmi
+luarocks install --server=http://luarocks.org/dev fourmi
 ```
 
 ## Usage
@@ -66,12 +65,12 @@ return {
             * -- For each of them do the following
             (
                 -- Minify then gzip
-                (minify:opt("out", os.getenv "HOME" .. "/tmp-code") >> gzip)
+                (minify:opt("out", __"${HOME}/tmp-code") >> gzip)
                     -- Only if gzip file are not already there
                     ^ function(file)
                         return outdated(
                             file,
-                            os.getenv "HOME" .. "/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
+                            __"${HOME}/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
                         )
                     end
             )
@@ -91,7 +90,7 @@ return {
                 end)
             )
             * -- Remove each of them
-            rm:opt("dir", os.getenv "HOME" .. "/tmp-code")
+            rm:opt("dir", __"${HOME}/tmp-code")
         )
 }
 ```

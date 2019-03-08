@@ -1,0 +1,557 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Metamethods">Metamethods</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/fourmi.plan.html">fourmi.plan</a></li>
+  <li><strong>fourmi.task</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/fourmi.builtins.html">fourmi.builtins</a></li>
+  <li><a href="../modules/fourmi.html">fourmi</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>fourmi.task</code></h1>
+<p>Task module</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Copyright</strong>: Benoit Giannangeli 2019</li>
+        <li><strong>License</strong>: MIT</li>
+        <li><strong>Author</strong>: Benoit Giannangeli</li>
+    </ul>
+
+
+<h2><a href="#Metamethods">Metamethods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__div">fourmi.task:__div (task1, task2)</a></td>
+	<td class="summary">Runs task1 in parallel of task2</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__concat">fourmi.task:__concat (task1, task2)</a></td>
+	<td class="summary">Runs task1 then task2</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__band">fourmi.task:__band (task1, task2)</a></td>
+	<td class="summary">Runs task2 if task1 returns truthy value</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__bor">fourmi.task:__bor (task1, task2)</a></td>
+	<td class="summary">Runs task2 only if task1 returns falsy value</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__shr">fourmi.task:__shr (task1, task2)</a></td>
+	<td class="summary">Pipes task1's output to task2 input</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__shl">fourmi.task:__shl (task2, task1)</a></td>
+	<td class="summary">Pipes task2's output to task1 input</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__bxor">fourmi.task:__bxor (task1, task2)</a></td>
+	<td class="summary">Runs task2 with task1 output if any, otherwise doesn't run task2</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__mul">fourmi.task:__mul (task1, task2)</a></td>
+	<td class="summary">Runs task2 for each output of task1</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__pow">fourmi.task:__pow (task1, condition)</a></td>
+	<td class="summary">Runs task1 if a condition is met</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:__call">fourmi.task:__call (self, ...)</a></td>
+	<td class="summary">Run the task</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:description">fourmi.task:description (self, description)</a></td>
+	<td class="summary">Set task's description</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:name">fourmi.task:name (self, name)</a></td>
+	<td class="summary">Set task's name</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:perform">fourmi.task:perform (self, fn)</a></td>
+	<td class="summary">Set task's action</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fourmi.task:option">fourmi.task:option (self, name, value)</a></td>
+	<td class="summary">Set a task's option</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Metamethods"></a>Metamethods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "fourmi.task:__div"></a>
+    <strong>fourmi.task:__div (task1, task2)</strong>
+    </dt>
+    <dd>
+    Runs task1 in parallel of task2
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__concat"></a>
+    <strong>fourmi.task:__concat (task1, task2)</strong>
+    </dt>
+    <dd>
+    Runs task1 then task2
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__band"></a>
+    <strong>fourmi.task:__band (task1, task2)</strong>
+    </dt>
+    <dd>
+    Runs task2 if task1 returns truthy value
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__bor"></a>
+    <strong>fourmi.task:__bor (task1, task2)</strong>
+    </dt>
+    <dd>
+    Runs task2 only if task1 returns falsy value
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__shr"></a>
+    <strong>fourmi.task:__shr (task1, task2)</strong>
+    </dt>
+    <dd>
+    Pipes task1's output to task2 input
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__shl"></a>
+    <strong>fourmi.task:__shl (task2, task1)</strong>
+    </dt>
+    <dd>
+    Pipes task2's output to task1 input
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__bxor"></a>
+    <strong>fourmi.task:__bxor (task1, task2)</strong>
+    </dt>
+    <dd>
+    Runs task2 with task1 output if any, otherwise doesn't run task2
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__mul"></a>
+    <strong>fourmi.task:__mul (task1, task2)</strong>
+    </dt>
+    <dd>
+    Runs task2 for each output of task1
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">task2</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__pow"></a>
+    <strong>fourmi.task:__pow (task1, condition)</strong>
+    </dt>
+    <dd>
+    Runs task1 if a condition is met
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task1</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">condition</span>
+            <span class="types"><span class="type">boolean</span> or <span class="type">function</span></span>
+         If a function, will be run when resulting task is invoked
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:__call"></a>
+    <strong>fourmi.task:__call (self, ...)</strong>
+    </dt>
+    <dd>
+    Run the task
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">...</span>
+         Task input
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "fourmi.task:description"></a>
+    <strong>fourmi.task:description (self, description)</strong>
+    </dt>
+    <dd>
+    Set task's description
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">description</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:name"></a>
+    <strong>fourmi.task:name (self, name)</strong>
+    </dt>
+    <dd>
+    Set task's name
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:perform"></a>
+    <strong>fourmi.task:perform (self, fn)</strong>
+    </dt>
+    <dd>
+    Set task's action
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">fn</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         function
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fourmi.task:option"></a>
+    <strong>fourmi.task:option (self, name, value)</strong>
+    </dt>
+    <dd>
+    Set a task's option
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+            <span class="types"><a class="type" href="../classes/fourmi.task.html">task</a></span>
+
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+         Option's name
+        </li>
+        <li><span class="parameter">value</span>
+         Option's value
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2019-03-08 15:34:56 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

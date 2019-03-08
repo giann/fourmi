@@ -1,6 +1,6 @@
 ---
 -- Plan module
--- @classmod plan
+-- @classmod fourmi.plan
 -- @author Benoit Giannangeli
 -- @license MIT
 -- @copyright Benoit Giannangeli 2019

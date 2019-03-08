@@ -8,7 +8,8 @@ local plan     = fourmi.plan
 local task     = fourmi.task
 local sh       = builtins.sh
 local outdated = builtins.outdated
-
+local __       = builtins.__
+local y, r     = colors.yellow, colors.red
 -- Define tasks
 
 local ls = task "ls"
@@ -68,10 +69,10 @@ local rm = task "rm"
 
             if not ok then
                 print(
-                    colors.red("Could not delete file ")
-                    .. colors.yellow(file)
+                    r "Could not delete file "
+                    .. y(file)
                     .. ": "
-                    .. colors.red(tostring(message))
+                    .. r(tostring(message))
                 )
             end
         end
@@ -98,11 +99,11 @@ return {
             ls:opt("mask", "%.lua$")
             *
             (
-                (minify:opt("out", os.getenv "HOME" .. "/tmp-code") >> gzip)
+                (minify:opt("out", __"${HOME}/tmp-code") >> gzip)
                     ^ function(file)
                         return outdated(
                             file,
-                            os.getenv "HOME" .. "/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
+                            __"${HOME}/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
                         )
                     end
             )
@@ -119,6 +120,6 @@ return {
                 end)
             )
             *
-            rm:opt("dir", os.getenv "HOME" .. "/tmp-code")
+            rm:opt("dir", __"${HOME}/tmp-code")
         )
 }

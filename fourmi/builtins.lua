@@ -1,5 +1,5 @@
 ---
--- Main fourmi module
+-- Common helpers and basic tasks
 -- @module fourmi.builtins
 -- @author Benoit Giannangeli
 -- @license MIT
@@ -69,6 +69,54 @@ function builtins.outdated(original, target)
         return not lfs.attributes(original),
             original .. " already present"
     end
+end
+
+---
+-- String interpolation helper
+-- `${VARIABLE}` are interpolated with `os.getenv "VARIABLE"`, `#{variable}` are interpolated with
+-- value named `variable` in `context` or caller locals or `_G`
+-- @tparam string str String to interpolate
+-- @tparam[opt] table context Table in which to search variables to interpolates
+-- @treturn string
+function builtins.__(str, context)
+    -- Interpolate environment variables
+    local env
+    repeat
+        env = str:match "%${([A-Za-z_]+[A-Za-z_0-9]*)}"
+
+        str = env
+            and str:gsub("%${" .. env .. "}", os.getenv(env) or "")
+            or str
+    until not env
+
+    -- Interpolate variables
+
+    -- No context provided, build one from caller locals
+    if not context then
+        context = {}
+        local l = 1
+        local key, value
+
+        repeat
+            key, value = debug.getlocal(2, l)
+            l = l + 1
+
+            if key ~= nil then
+                context[key] = value
+            end
+        until not key
+    end
+
+    local var
+    repeat
+        var = str:match "#{([A-Za-z_]+[A-Za-z_0-9]*)}"
+
+        str = var
+            and str:gsub("#{" .. var .. "}", tostring(context[var] or _G[var]))
+            or str
+    until not var
+
+    return str
 end
 
 return builtins

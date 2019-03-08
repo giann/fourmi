@@ -15,9 +15,10 @@ description = {
 
 build = {
     modules = {
-        ["fourmi"]      = "croissant/init.lua",
-        ["fourmi.plan"] = "croissant/plan.lua",
-        ["fourmi.task"] = "croissant/task.lua",
+        ["fourmi"]          = "fourmi/init.lua",
+        ["fourmi.plan"]     = "fourmi/plan.lua",
+        ["fourmi.task"]     = "fourmi/task.lua",
+        ["fourmi.builtins"] = "fourmi/builtins.lua",
     },
     type = "builtin",
     install = {

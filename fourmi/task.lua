@@ -1,6 +1,6 @@
 ---
 -- Task module
--- @classmod task
+-- @classmod fourmi.task
 -- @author Benoit Giannangeli
 -- @license MIT
 -- @copyright Benoit Giannangeli 2019
