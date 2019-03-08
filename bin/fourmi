@@ -8,36 +8,6 @@ print(
     "🐜  Fourmi 0.0.1 (C) 2019 Benoit Giannangeli"
 )
 
-local function checkinvalid(condition, message)
-    if condition then
-        print(colors.red(message))
-
-        os.exit(1)
-    end
-end
-
--- Search for fourmi.plan.lua in current directory
-local fourmi_lua = lfs.attributes "fourmi.plan.lua"
-
-checkinvalid(
-    not fourmi_lua or fourmi_lua.mode ~= "file",
-    "Could not find `fourmi.plan.lua` in current directory."
-)
-
--- Load it
-local fourmi_fn, err = loadfile "fourmi.plan.lua"
-
-checkinvalid(not fourmi_fn, "Could not find parse `fourmi.plan.lua`: " .. tostring(err))
-
--- Run it
-local ok, plan = xpcall(fourmi_fn, debug.traceback)
-
-checkinvalid(not ok, "An error occured while running `fourmi.plan.lua`:\n" .. tostring(plan))
-
-if type(plan) ~= "table" then
-    checkinvalid("`fourmi.plan.lua` should return a table")
-end
-
 -- Build parser
 local parser = argparse()
         :name "fourmi"
@@ -52,8 +22,43 @@ parser:argument "arguments"
     :description "Plan's arguments"
     :args "*"
 
+parser:option "--file -f"
+    :description "Specify plan file (if it's not fourmi.plan.lua)"
+    :args(1)
+
 -- Parse arguments
 local arguments = parser:parse()
+
+local function checkinvalid(condition, message)
+    if condition then
+        print(colors.red(message))
+
+        os.exit(1)
+    end
+end
+
+-- Search for fourmi.plan.lua in current directory
+local fourmi_filename = arguments.file or "fourmi.plan.lua"
+local fourmi_lua = lfs.attributes(fourmi_filename)
+
+checkinvalid(
+    not fourmi_lua or fourmi_lua.mode ~= "file",
+    "Could not find `fourmi.plan.lua` in current directory."
+)
+
+-- Load it
+local fourmi_fn, err = loadfile(fourmi_filename)
+
+checkinvalid(not fourmi_fn, "Could not find parse `" .. fourmi_filename .. "`: " .. tostring(err))
+
+-- Run it
+local ok, plan = xpcall(fourmi_fn, debug.traceback)
+
+checkinvalid(not ok, "An error occured while running `" .. fourmi_filename .. "`:\n" .. tostring(plan))
+
+if type(plan) ~= "table" then
+    checkinvalid("`fourmi.plan.lua` should return a table")
+end
 
 -- Run first target that matches a key in plan
 local defaultPlan

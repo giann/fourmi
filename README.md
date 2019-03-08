@@ -25,7 +25,7 @@ Write a [fourmi.plan.lua](#plan) file in your project directory and then:
 
 ```bash
 # If `plan` is not provided, will run plan named `all`
-fourmi [plan]
+fourmi [--file <file>] [-h] <plan> [<arguments>] ...
 ```
 
 ## Task
@@ -53,7 +53,7 @@ local mytask = task "mytask"
 - **`task1 * task2`**: returns a new task that does `task2` for all output of `task1`
 - **`task1 ^ (condition)`**: returns a new task that does `task1` if `condition` (expression or function to be evaluated) is true
 
-Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/fourmi/blob/master/fourmi.plan.lua):
+Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/fourmi/blob/master/example-fourmi.plan.lua):
 
 ```lua
 return {
