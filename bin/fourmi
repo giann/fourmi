@@ -59,14 +59,14 @@ local arguments = parser:parse()
 local defaultPlan
 
 for _, target in ipairs(plan) do
-    if target.name == "all" then
+    if target.__name == "all" then
         defaultPlan = target
     end
 
-    if arguments.plan == target.name then
+    if arguments.plan == target.__name then
         xpcall(target, function(err)
             print(colors.red(
-                "Plan `" .. target.name .. "` failed with error:\n" .. err
+                "Plan `" .. target.__name .. "` failed with error:\n" .. err
             ))
         end, arguments)
 

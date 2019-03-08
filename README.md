@@ -24,7 +24,7 @@ Requirements:
 Write a [fourmi.plan.lua](#plan) file in your project directory and then:
 
 ```bash
-# If `plan` is not provided, will run plan named `default`
+# If `plan` is not provided, will run plan named `all`
 fourmi [plan]
 ```
 
@@ -58,7 +58,7 @@ Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/four
 ```lua
 return {
     -- Default plan to execute
-    plan "default"
+    plan "all"
         -- Define its task
         :task(
             -- List files that ends with `.lua`

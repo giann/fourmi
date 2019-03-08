@@ -19,7 +19,7 @@ local taskMt
 -- @treturn task New task
 local function task(name)
     return setmetatable({
-        name = name,
+        __name = name,
         run = function() end,
         options = {}
     }, taskMt)
@@ -33,7 +33,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __div = function(task1, task2)
-        return task("(" .. task1.name .. " / " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " / " .. task2.__name .. ")")
             :perform(function(self, ...)
                 return parallel({task1.run, task2.run}, ...)
             end)
@@ -46,7 +46,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __concat = function(task1, task2)
-        return task("(" .. task1.name .. " .. " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " .. " .. task2.__name .. ")")
             :perform(function(self, ...)
                 return task1(...),
                     task2(...)
@@ -60,7 +60,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __band = function(task1, task2)
-        return task("(" .. task1.name .. " & " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " & " .. task2.__name .. ")")
             :perform(function(self, ...)
                 local resultask1 = task1(...)
 
@@ -77,7 +77,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __bor = function(task1, task2)
-        return task("(" .. task1.name .. " | " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " | " .. task2.__name .. ")")
             :perform(function(self, ...)
                 return task1(...) or task2(...)
             end)
@@ -90,7 +90,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __shr = function(task1, task2)
-        return task("(" .. task1.name .. " >> " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " >> " .. task2.__name .. ")")
             :perform(function(self, ...)
                 return task2(task1(...))
             end)
@@ -99,8 +99,8 @@ taskMt = {
 
     ---
     -- Pipes task2's output to task1 input
-    -- @tparam task task1
     -- @tparam task task2
+    -- @tparam task task1
     -- @treturn task
     __shl = function(task2, task1)
         return task2 >> task1
@@ -112,7 +112,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __bxor = function(task1, task2)
-        return task("(" .. task1.name .. " ~ " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " ~ " .. task2.__name .. ")")
             :perform(function(self, ...)
                 local task1Res = {task1(...)}
 
@@ -127,7 +127,7 @@ taskMt = {
     -- @tparam task task2
     -- @treturn task
     __mul = function(task1, task2)
-        return task("(" .. task1.name .. " * " .. task2.name .. ")")
+        return task("(" .. task1.__name .. " * " .. task2.__name .. ")")
             :perform(function(self, ...)
                 local results = {}
 
@@ -153,7 +153,7 @@ taskMt = {
     -- @tparam boolean|function condition If a function, will be run when resulting task is invoked
     -- @treturn task
     __pow = function(task1, condition)
-        return task(task1.name  .. "^(" .. tostring(condition) .. ")")
+        return task(task1.__name  .. " ^ (" .. tostring(condition) .. ")")
             :perform(function(self, ...)
                 local ok, message
 
@@ -171,7 +171,7 @@ taskMt = {
                         table.insert(args, tostring(arg))
                     end
 
-                    print(colors.yellow(table.concat(args, " ") .. " ignored: " .. message))
+                    print(colors.yellow("\nTask " .. task1.__name .. " ignored: " .. message))
                 end
             end)
             :option("quiet", true)
@@ -187,7 +187,7 @@ taskMt = {
         if not self.options.quiet then
             print(
                 colors.green("\n🌿 Running task "
-                    .. colors.bright(colors.blue(self.name))
+                    .. colors.bright(colors.blue(self.__name))
                     .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
                 .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
             )
@@ -197,7 +197,7 @@ taskMt = {
 
         if not self.options.quiet then
             print(
-                "\tTask " .. colors.bright(colors.blue(self.name)) .. " completed with "
+                "\tTask " .. colors.bright(colors.blue(self.__name)) .. " completed with "
                 .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
                 .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
             )
@@ -222,9 +222,19 @@ taskMt = {
         end,
 
         ---
+        -- Set task's name
+        -- @tparam task self
+        -- @tparam string name
+        name = function(self, name)
+            self.__name = name
+
+            return self
+        end,
+
+        ---
         -- Set task's action
         -- @tparam task self
-        -- @tparam string function
+        -- @tparam string fn function
         perform = function(self, fn)
             self.run = fn
 
@@ -261,7 +271,7 @@ taskMt = {
     },
 
     __tostring = function(self)
-        return "Task " .. self.name
+        return "Task " .. self.__name
     end
 }
 

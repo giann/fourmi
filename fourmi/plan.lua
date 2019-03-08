@@ -19,20 +19,23 @@ local planMt = {
         if not arguments.quiet then
             print(
                 colors.green("\n🐜 Running plan "
-                    .. colors.bright(colors.blue(self.name)))
-                .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
+                .. colors.bright(colors.blue(self.__name)))
+                .. colors.dim(colors.cyan(
+                    (self.__description and "\n" .. self.__description .. ": " or "")
+                    .. self.__task.__name
+                ))
             )
         end
 
         if not self.task then
-            error("Task is undefined for plan " .. self.name)
+            error("Task is undefined for plan " .. self.__name)
         end
 
         local results = {self.__task(table.unpack(arguments.arguments or {}))}
 
         if not arguments.quiet then
             print(
-                "\n🐜 Plan " .. colors.bright(colors.blue(self.name)) .. " completed with "
+                "\n🐜 Plan " .. colors.bright(colors.blue(self.__name)) .. " completed with "
                 .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
                 .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
             )
@@ -65,6 +68,16 @@ local planMt = {
             return self
         end,
 
+        ---
+        -- Set plan's name
+        -- @tparam plan self
+        -- @tparam string name
+        name = function(self, name)
+            self.__name = name
+
+            return self
+        end,
+
         -- Aliases
         desc = function(self, ...)
             return self:description(...)
@@ -76,7 +89,7 @@ local planMt = {
 
 local function plan(name)
     return setmetatable({
-        name = name,
+        __name = name,
     }, planMt)
 end
 

@@ -3,10 +3,11 @@
 local colors   = require "term.colors"
 local lfs      = require "lfs"
 local fourmi   = require "fourmi"
+local builtins = require "fourmi.builtins"
 local plan     = fourmi.plan
 local task     = fourmi.task
-local sh       = fourmi.sh
-local outdated = fourmi.outdated
+local sh       = builtins.sh
+local outdated = builtins.outdated
 
 -- Define tasks
 
@@ -91,7 +92,7 @@ local map = task "map"
 -- Define plans
 
 return {
-    plan "default"
+    plan "all"
         :description "Minify and gzip lua files"
         :task(
             ls:opt("mask", "%.lua$")
