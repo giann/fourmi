@@ -59,12 +59,16 @@ local arguments = parser:parse()
 local defaultPlan
 
 for _, target in ipairs(plan) do
-    if target.name == "default" then
+    if target.name == "all" then
         defaultPlan = target
     end
 
     if arguments.plan == target.name then
-        target(arguments)
+        xpcall(target, function(err)
+            print(colors.red(
+                "Plan `" .. target.name .. "` failed with error:\n" .. err
+            ))
+        end, arguments)
 
         os.exit()
     end
@@ -79,4 +83,8 @@ if arguments.plan then
     table.insert(arguments.arguments, 1, arguments.plan)
 end
 
-defaultPlan(arguments)
+xpcall(defaultPlan, function(err)
+    print(colors.red(
+        "Plan `all` failed with error:\n" .. err
+    ))
+end, arguments)

@@ -16,7 +16,7 @@ local fourmi = {
 ---
 -- Runs a command captures stderr and returns it as error message
 -- @tparam string program command to run
--- @tparam string ... program arguments
+-- @tparam string ... program arguments If an arguments contains spaces it'll be quoted
 -- @treturn[1] boolean true if command succeded
 -- @treturn[2] string message in case of failure
 function fourmi.sh(program, ...)
@@ -30,8 +30,7 @@ function fourmi.sh(program, ...)
     end
 
     local command =
-        "/usr/bin/env "
-        .. program
+        program
         .. " " .. table.concat(arguments, " ")
 
     local stderr = os.tmpname()
@@ -39,12 +38,12 @@ function fourmi.sh(program, ...)
     print(colors.magenta("🐢 " .. command))
 
     -- spawn program and yield when waitpid returns
-    local ok, _, status = os.execute(
+    local ok, exit, status = os.execute(
         command .. " 2> " .. stderr,
         "r"
     )
 
-    if ok then
+    if ok and exit == "exit" and status == 0 then
         return true
     else
         local err = io.open(stderr, "r")
