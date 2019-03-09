@@ -74,8 +74,9 @@ end
 
 ---
 -- String interpolation helper
--- `${VARIABLE}` are interpolated with `os.getenv "VARIABLE"`, `#{variable}` are interpolated with
--- value named `variable` in `context` or caller locals or `_G`
+-- Repalce `${VARIABLE}` with `os.getenv "VARIABLE"`,
+-- `#{variable}` with `variable` in `context` or caller locals or `_G`
+-- `~` with `os.getenv "HOME"`
 -- @tparam string str String to interpolate
 -- @tparam[opt] table context Table in which to search variables to interpolates
 -- @treturn string
@@ -107,6 +108,9 @@ function builtins.__(str, context)
             end
         until not key
     end
+
+    -- Interpolate ~
+    str = str:gsub("~", os.getenv "HOME")
 
     local var
     repeat
@@ -178,6 +182,53 @@ builtins.task.mv = task "mv"
             return dest
         else
             error(err)
+        end
+    end)
+
+--- Empty files of a directory
+builtins.task.empty = task "empty"
+    :description "Empty files of a directory"
+    :perform(function(self)
+        local dir = builtins.__(self.options[1])
+        local kind = lfs.attributes(dir).mode
+
+        if kind == "directory" then
+            local count = 0
+            for file in lfs.dir(dir) do
+                file = dir .. "/" .. file
+                if (lfs.attributes(file) or {}).mode == "file" then
+                    local ok, err = os.remove(file)
+
+                    if ok then
+                        print(colors.yellow("\t`" .. file .. "` removed"))
+                        count = count + 1
+                    else
+                        print(colors.red("\tCould not remove `" .. file .. "`: " .. err))
+                    end
+                end
+            end
+
+            if count > 0 then
+                print(colors.yellow("Removed " .. count .. " files in `" .. dir .. "`"))
+            else
+                print(colors.green "Nothing to remove")
+            end
+        else
+            error("`" .. dir .. "` is not a directory")
+        end
+    end)
+
+--- Filter out up-to-date files
+builtins.task.outdated = task "outdated"
+    :description "Filter out up-to-date files"
+    :property("quiet", true)
+    :perform(function(self, original)
+        local dest = builtins.__(self.options[1], {
+            original = original:match "([^/]*)$"
+        })
+
+        if builtins.outdated(original, dest) then
+            return original
         end
     end)
 

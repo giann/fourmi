@@ -19,9 +19,10 @@ local taskMt
 -- @treturn task New task
 local function task(name)
     return setmetatable({
-        __name = name,
-        run = function() end,
-        options = {}
+        __name     = name,
+        run        = function() end,
+        options    = {},
+        properties = {}
     }, taskMt)
 end
 
@@ -37,7 +38,7 @@ taskMt = {
             :perform(function(self, ...)
                 return parallel({task1.run, task2.run}, ...)
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
@@ -51,24 +52,24 @@ taskMt = {
                 return task1:run(...),
                     task2:run(...)
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
-    -- Runs task2 if task1 returns truthy value
+    -- Runs task2 with task1 ouput if any and first output is truthy value
     -- @tparam task task1
     -- @tparam task task2
     -- @treturn task
     __band = function(task1, task2)
         return task("(" .. task1.__name .. " & " .. task2.__name .. ")")
             :perform(function(self, ...)
-                local resultask1 = task1:run(...)
+                local resultask1 = table.pack(task1:run(...))
 
-                if resultask1 then
-                    return resultask1, task2:run(...)
+                if resultask1 and resultask1[1] then
+                    return task2:run(table.unpack(resultask1))
                 end
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
@@ -81,7 +82,7 @@ taskMt = {
             :perform(function(self, ...)
                 return task1:run(...) or task2:run(...)
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
@@ -94,7 +95,7 @@ taskMt = {
             :perform(function(self, ...)
                 return task2:run(task1:run(...))
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
@@ -107,22 +108,7 @@ taskMt = {
     end,
 
     ---
-    -- Runs task2 with task1 output if any, otherwise doesn't run task2
-    -- @tparam task task1
-    -- @tparam task task2
-    -- @treturn task
-    __bxor = function(task1, task2)
-        return task("(" .. task1.__name .. " ~ " .. task2.__name .. ")")
-            :perform(function(self, ...)
-                local task1Res = {task1:run(...)}
-
-                return #task1Res > 0 and task2:run(table.unpack(task1Res))
-            end)
-            :option("quiet", true)
-    end,
-
-    ---
-    -- Runs task2 for each output of task1
+    -- Runs task2 for each output of task1, task2 is silenced
     -- @tparam task task1
     -- @tparam task task2
     -- @treturn task
@@ -144,7 +130,7 @@ taskMt = {
 
                 return table.unpack(results)
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
@@ -174,11 +160,11 @@ taskMt = {
                     print(colors.yellow("\nTask " .. task1.__name .. " ignored: " .. message))
                 end
             end)
-            :option("quiet", true)
+            :property("quiet", true)
     end,
 
     ---
-    -- Run the task
+    -- Set options
     -- @tparam task self
     -- @param ... Task input
     __call = function(self, ...)
@@ -216,7 +202,7 @@ taskMt = {
             self.run = function(self, ...)
                 local time = os.clock()
 
-                if not self.options.quiet then
+                if not self.properties.quiet then
                     print(
                         colors.green("\n🌿 Running task "
                             .. colors.bright(colors.blue(self.__name))
@@ -227,15 +213,15 @@ taskMt = {
 
                 local results = {fn(self, ...)}
 
-                if not self.options.quiet then
+                if not self.properties.quiet then
                     print(
-                        "\tTask " .. colors.bright(colors.blue(self.__name)) .. " completed with "
+                        "  Task " .. colors.bright(colors.blue(self.__name)) .. " completed with "
                         .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
                         .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
                     )
 
                     for _, res in ipairs(results) do
-                        print("\t\t→ " .. colors.dim(colors.cyan(tostring(res))))
+                        print("\t→ " .. colors.dim(colors.cyan(tostring(res))))
                     end
                 end
 
@@ -246,23 +232,23 @@ taskMt = {
         end,
 
         ---
-        -- Set a task's option
+        -- Set a property
         -- @tparam task self
         -- @tparam string name Option's name
         -- @param value Option's value
-        option = function(self, name, value)
-            local options = type(name) == "table"
+        property = function(self, name, value)
+            local properties = type(name) == "table"
                 and name or {[name] = value}
 
-            for n, v in pairs(options) do
-                self.options[n] = v
+            for n, v in pairs(properties) do
+                self.properties[n] = v
             end
 
             return self
         end,
 
-        opt = function(self, ...)
-            return self:option(...)
+        prop = function(self, ...)
+            return self:property(...)
         end,
 
         perf = function(self, ...)

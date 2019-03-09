@@ -8,17 +8,17 @@ local __       = builtins.__
 local sh       = builtins.sh
 local ls       = builtins.task.ls
 local mv       = builtins.task.mv
-local shtask   = builtins.task.sh
+local empty    = builtins.task.empty
+local outdated = builtins.task.outdated
 
 -- Define tasks
 
 local minify = task "minify"
     :description "Minify lua files with luamin"
     :perform(function(self, file)
-        local minifiedFile = __"${HOME}/.fourmi/tmp/"
+        local minifiedFile = __"~/.fourmi/tmp/"
             .. file
                 :match "([^/]*)$"
-                :gsub("%.lua$", ".min.lua")
 
         if not sh("luamin", "-f", file, ">", minifiedFile) then
             error("Could not create minified file at: " .. minifiedFile)
@@ -44,12 +44,12 @@ return {
         :description "Minify and gzip lua files"
         :task(
             ls("./fourmi", "%.lua$")
-                * (minify >> gzip >> mv "${HOME}/tmp-code")
+                * (outdated "~/tmp-code/#{original}.gz" & minify >> gzip >> mv "~/tmp-code")
         ),
 
     plan "clean"
         :description "Cleanup"
         :task(
-            shtask("rm", __"${HOME}/tmp-code/*.gz")
+            empty "~/tmp-code"
         )
 }

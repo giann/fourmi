@@ -34,7 +34,7 @@ Task are relatively small jobs that you can combine using operators.
 ```lua
 local mytask = task "mytask"
     :description "A short description of what it does"
-    :option("optionkey", optionvalue)
+    :property("propertykey", propertyvalue)
     :perform(function(self, ...)
         -- Do something with ...
 
@@ -56,46 +56,25 @@ Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/four
 
 ```lua
 return {
-    -- Default plan to execute
+    -- Default plan
     plan "all"
-        -- Small description of what it does
+        -- Small description of what the plan does
         :description "Minify and gzip lua files"
-        -- Plan's arguments
-        :input "./fourmi"
         -- Define its task
         :task(
-            -- List files that ends with `.lua`
-            ls:opt("mask", "%.lua$")
-            * -- For each of them do the following
-            (
-                -- Minify then gzip
-                (minify:opt("out", __"${HOME}/tmp-code") >> gzip)
-                    -- Only if gzip file are not already there
-                    ^ function(file)
-                        return outdated(
-                            file,
-                            __"${HOME}/tmp-code/" .. file:gsub("%.lua$", ".min.lua.gz")
-                        )
-                    end
-            )
+            -- List files in `./fourmi` ending with `.lua`
+            ls("./fourmi", "%.lua$")
+                -- For each of them: if the gzipped file does not exist or is older than the original,
+                -- minify then gzip then move to `~/tmp-code`
+                * (outdated "~/tmp-code/#{original}.gz" & minify >> gzip >> mv "~/tmp-code")
         ),
 
-    -- To call this plan do: `fourmi clean`
+    -- Clean plan
     plan "clean"
-        :input "./fourmi"
+        :description "Cleanup"
         :task(
-            (
-                -- List files that ends with `.lua`
-                ls:opt("mask", "%.lua$")
-                >>
-                -- Transform file.lua to file.min.lua.gz
-                map:opt("map" , function(element)
-                    local mapped = element:gsub("%.lua$", ".min.lua.gz")
-                    return mapped
-                end)
-            )
-            * -- Remove each of them
-            rm:opt("dir", __"${HOME}/tmp-code")
+            -- Remove all files from `~/tmp-code`
+            empty "~/tmp-code"
         )
 }
 ```

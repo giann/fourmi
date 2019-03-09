@@ -41,7 +41,7 @@ local planMt = {
             )
 
             for _, res in ipairs(results) do
-                print("\t\t→ " .. colors.dim(colors.cyan(tostring(res))))
+                print("\t→ " .. colors.dim(colors.cyan(tostring(res))))
             end
         end
     end,
