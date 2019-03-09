@@ -48,8 +48,8 @@ taskMt = {
     __concat = function(task1, task2)
         return task("(" .. task1.__name .. " .. " .. task2.__name .. ")")
             :perform(function(self, ...)
-                return task1(...),
-                    task2(...)
+                return task1:run(...),
+                    task2:run(...)
             end)
             :option("quiet", true)
     end,
@@ -62,10 +62,10 @@ taskMt = {
     __band = function(task1, task2)
         return task("(" .. task1.__name .. " & " .. task2.__name .. ")")
             :perform(function(self, ...)
-                local resultask1 = task1(...)
+                local resultask1 = task1:run(...)
 
                 if resultask1 then
-                    return resultask1, task2(...)
+                    return resultask1, task2:run(...)
                 end
             end)
             :option("quiet", true)
@@ -79,7 +79,7 @@ taskMt = {
     __bor = function(task1, task2)
         return task("(" .. task1.__name .. " | " .. task2.__name .. ")")
             :perform(function(self, ...)
-                return task1(...) or task2(...)
+                return task1:run(...) or task2:run(...)
             end)
             :option("quiet", true)
     end,
@@ -92,7 +92,7 @@ taskMt = {
     __shr = function(task1, task2)
         return task("(" .. task1.__name .. " >> " .. task2.__name .. ")")
             :perform(function(self, ...)
-                return task2(task1(...))
+                return task2:run(task1:run(...))
             end)
             :option("quiet", true)
     end,
@@ -114,9 +114,9 @@ taskMt = {
     __bxor = function(task1, task2)
         return task("(" .. task1.__name .. " ~ " .. task2.__name .. ")")
             :perform(function(self, ...)
-                local task1Res = {task1(...)}
+                local task1Res = {task1:run(...)}
 
-                return #task1Res > 0 and task2(table.unpack(task1Res))
+                return #task1Res > 0 and task2:run(table.unpack(task1Res))
             end)
             :option("quiet", true)
     end,
@@ -131,8 +131,8 @@ taskMt = {
             :perform(function(self, ...)
                 local results = {}
 
-                for _, result in ipairs {task1(...)} do
-                    local task2Res = task2(result)
+                for _, result in ipairs {task1:run(...)} do
+                    local task2Res = task2:run(result)
 
                     if task2Res ~= nil then
                         table.insert(
@@ -164,7 +164,7 @@ taskMt = {
                 end
 
                 if ok then
-                    return task1(...)
+                    return task1:run(...)
                 else
                     local args = {}
                     for _, arg in ipairs {...} do
@@ -182,32 +182,9 @@ taskMt = {
     -- @tparam task self
     -- @param ... Task input
     __call = function(self, ...)
-        local time = os.clock()
+        self.options = {...}
 
-        if not self.options.quiet then
-            print(
-                colors.green("\n🌿 Running task "
-                    .. colors.bright(colors.blue(self.__name))
-                    .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
-                .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
-            )
-        end
-
-        local results = {self:run(...)}
-
-        if not self.options.quiet then
-            print(
-                "\tTask " .. colors.bright(colors.blue(self.__name)) .. " completed with "
-                .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
-                .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
-            )
-
-            for _, res in ipairs(results) do
-                print("\t\t→ " .. colors.dim(colors.cyan(tostring(res))))
-            end
-        end
-
-        return table.unpack(results)
+        return self
     end,
 
     __index = {
@@ -236,7 +213,34 @@ taskMt = {
         -- @tparam task self
         -- @tparam string fn function
         perform = function(self, fn)
-            self.run = fn
+            self.run = function(self, ...)
+                local time = os.clock()
+
+                if not self.options.quiet then
+                    print(
+                        colors.green("\n🌿 Running task "
+                            .. colors.bright(colors.blue(self.__name))
+                            .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
+                        .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
+                    )
+                end
+
+                local results = {fn(self, ...)}
+
+                if not self.options.quiet then
+                    print(
+                        "\tTask " .. colors.bright(colors.blue(self.__name)) .. " completed with "
+                        .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
+                        .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
+                    )
+
+                    for _, res in ipairs(results) do
+                        print("\t\t→ " .. colors.dim(colors.cyan(tostring(res))))
+                    end
+                end
+
+                return table.unpack(results)
+            end
 
             return self
         end,

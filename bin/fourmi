@@ -16,7 +16,7 @@ local parser = argparse()
 -- Plan argument
 parser:argument "plan"
     :description "Plan to execute"
-    :args(1)
+    :args "?"
 
 parser:argument "arguments"
     :description "Plan's arguments"

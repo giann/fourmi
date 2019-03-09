@@ -5,6 +5,7 @@
 -- @license MIT
 -- @copyright Benoit Giannangeli 2019
 
+local task   = require "fourmi.task"
 local colors = require "term.colors"
 local lfs    = require "lfs"
 
@@ -118,5 +119,66 @@ function builtins.__(str, context)
 
     return str
 end
+
+--- Builtin tasks
+builtins.task = {}
+
+---
+-- Create a task that runs a single shell command
+-- @tparam string command
+-- @tparam string ...
+-- @treturn task
+builtins.task.sh = function(command, ...)
+    local args = {...}
+
+    return task("$ " .. command .. " ", table.concat(args, " "))
+        :perform(function(tsk)
+            local ok, message = builtins.sh(command, table.unpack(args))
+
+            if ok then
+                print(colors.yellow(tsk.options.successMessage or command .. " succeeded"))
+            elseif not tsk.options.ignoreError then
+                error(colors.yellow(tsk.options.failureMessage or command .. " failed: " .. message))
+            else
+                print(colors.yellow(tsk.options.failureMessage or command .. " failed"))
+            end
+
+            return ok, message
+        end)
+end
+
+--- A task that list files
+builtins.task.ls = task "ls"
+    :description "List files in a directory"
+    :perform(function(self)
+        local dir = builtins.__(self.options[1])
+
+        local items = {}
+
+        for item in lfs.dir(dir) do
+            if not self.options[2]
+                or item:match(self.options[2]) then
+                table.insert(items, dir .. "/" .. item)
+            end
+        end
+
+        return table.unpack(items)
+    end)
+
+-- A task that moves a file
+builtins.task.mv = task "mv"
+    :description "Move a file"
+    :perform(function(self, file)
+        local dest = builtins.__(self.options[1]) .. "/" .. file:match "([^/]*)$"
+
+        local ok, err = os.rename(file, dest)
+
+        if ok then
+            print(colors.yellow("Moved `" .. file .. "` to `" .. dest .. "`"))
+            return dest
+        else
+            error(err)
+        end
+    end)
 
 return builtins
