@@ -8,6 +8,28 @@ print(
     "🐜  Fourmi 0.0.1 (C) 2019 Benoit Giannangeli"
 )
 
+--- Empty ~/.fourmi/tmp
+local function cleanup()
+    for file in lfs.dir(os.getenv "HOME" .. "/.fourmi/tmp") do
+        if file ~= "." and file ~= ".." then
+            os.remove(os.getenv "HOME" .. "/.fourmi/tmp/" .. file)
+        end
+    end
+end
+
+-- Make sure ~/.fourmi is there
+if not lfs.attributes(os.getenv "HOME" .. "/.fourmi") then
+    lfs.mkdir(os.getenv "HOME" .. "/.fourmi")
+end
+
+-- Make sure ~/.fourmi/tmp is there
+if not lfs.attributes(os.getenv "HOME" .. "/.fourmi/tmp") then
+    lfs.mkdir(os.getenv "HOME" .. "/.fourmi/tmp")
+end
+
+-- Cleanup in case previous fourmi failed to do so
+cleanup()
+
 -- Build parser
 local parser = argparse()
         :name "fourmi"
@@ -93,3 +115,5 @@ xpcall(defaultPlan, function(err)
         "Plan `all` failed with error:\n" .. err
     ))
 end, arguments)
+
+cleanup()
