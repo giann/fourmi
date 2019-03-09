@@ -31,7 +31,7 @@ local planMt = {
             error("Task is undefined for plan " .. self.__name)
         end
 
-        local results = {self.__task(table.unpack(arguments.arguments or {}))}
+        local results = {self.__task(table.unpack(self.__input))}--table.unpack(arguments.arguments or {}))}
 
         if not arguments.quiet then
             print(
@@ -64,6 +64,16 @@ local planMt = {
         -- @tparam string description
         description = function(self, description)
             self.__description = description
+
+            return self
+        end,
+
+        ---
+        -- Set plan's input
+        -- @tparam plan self
+        -- @tparam string ... inputs
+        input = function(self, ...)
+            self.__input = {...}
 
             return self
         end,

@@ -58,6 +58,10 @@ Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/four
 return {
     -- Default plan to execute
     plan "all"
+        -- Small description of what it does
+        :description "Minify and gzip lua files"
+        -- Plan's arguments
+        :input "./fourmi"
         -- Define its task
         :task(
             -- List files that ends with `.lua`
@@ -78,6 +82,7 @@ return {
 
     -- To call this plan do: `fourmi clean`
     plan "clean"
+        :input "./fourmi"
         :task(
             (
                 -- List files that ends with `.lua`

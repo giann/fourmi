@@ -94,6 +94,7 @@ local map = task "map"
 
 return {
     plan "all"
+        :input "./fourmi"
         :description "Minify and gzip lua files"
         :task(
             ls:opt("mask", "%.lua$")
@@ -110,6 +111,7 @@ return {
         ),
 
     plan "clean"
+        :input "./fourmi"
         :task(
             (
                 ls:opt("mask", "%.lua$")
@@ -123,3 +125,6 @@ return {
             rm:opt("dir", __"${HOME}/tmp-code")
         )
 }
+
+-- What is should be
+-- ls "./fourmi/*.lua" >> minify >> gzip >> dir "${HOME}/tmp-code"
