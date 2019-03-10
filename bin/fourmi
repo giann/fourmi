@@ -79,28 +79,33 @@ local fourmi_fn, err = loadfile(fourmi_filename)
 checkinvalid(not fourmi_fn, "Could not find parse `" .. fourmi_filename .. "`: " .. tostring(err))
 
 -- Run it
-local ok, plan = xpcall(fourmi_fn, debug.traceback)
+local ok, plans = xpcall(fourmi_fn, debug.traceback)
 
 checkinvalid(not ok, "An error occured while running `" .. fourmi_filename .. "`:\n" .. tostring(plan))
 
-if type(plan) ~= "table" then
+if type(plans) ~= "table" then
     checkinvalid("`fourmi.plan.lua` should return a table")
+end
+
+-- Run a plan
+local function runPlan(plan)
+    xpcall(plan, function(err)
+        print(colors.red(
+            "Plan `" .. plan.__name .. "` failed with error:\n" .. err
+        ))
+    end, arguments)
 end
 
 -- Run first target that matches a key in plan
 local defaultPlan
 
-for _, target in ipairs(plan) do
+for _, target in ipairs(plans) do
     if target.__name == "all" then
         defaultPlan = target
     end
 
     if arguments.plan == target.__name then
-        xpcall(target, function(err)
-            print(colors.red(
-                "Plan `" .. target.__name .. "` failed with error:\n" .. err
-            ))
-        end, arguments)
+        runPlan(target)
 
         os.exit()
     end
@@ -115,10 +120,6 @@ if arguments.plan then
     table.insert(arguments.arguments, 1, arguments.plan)
 end
 
-xpcall(defaultPlan, function(err)
-    print(colors.red(
-        "Plan `all` failed with error:\n" .. err
-    ))
-end, arguments)
+runPlan(defaultPlan)
 
 cleanup()
