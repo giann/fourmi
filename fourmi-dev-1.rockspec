@@ -19,6 +19,7 @@ build = {
         ["fourmi.plan"]     = "fourmi/plan.lua",
         ["fourmi.task"]     = "fourmi/task.lua",
         ["fourmi.builtins"] = "fourmi/builtins.lua",
+        ["fourmi.log"]      = "fourmi/log.lua",
     },
     type = "builtin",
     install = {

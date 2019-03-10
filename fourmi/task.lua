@@ -6,6 +6,7 @@
 -- @copyright Benoit Giannangeli 2019
 
 local colors = require "term.colors"
+local log    = require "fourmi.log"
 
 local function parallel(functions, ...)
     error "NYI"
@@ -157,7 +158,7 @@ taskMt = {
                         table.insert(args, tostring(arg))
                     end
 
-                    print(colors.yellow("\nTask " .. task1.__name .. " ignored: " .. message))
+                    log.warn("\nTask " .. task1.__name .. " ignored: " .. message)
                 end
             end)
             :property("quiet", true)
@@ -203,8 +204,8 @@ taskMt = {
                 local time = os.clock()
 
                 if not self.properties.quiet then
-                    print(
-                        colors.green("\n🌿 Running task "
+                    log.info("\n"
+                            .. colors.green("🌿 Running task "
                             .. colors.bright(colors.blue(self.__name))
                             .. colors.green .. " for " .. colors.bright(colors.yellow(table.concat({...}, ", "))))
                         .. (self.__description and colors.dim(colors.cyan("\n" .. self.__description)) or "")
@@ -214,14 +215,14 @@ taskMt = {
                 local results = {fn(self, ...)}
 
                 if not self.properties.quiet then
-                    print(
+                    log.info(
                         "  Task " .. colors.bright(colors.blue(self.__name)) .. " completed with "
                         .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
                         .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
                     )
 
                     for _, res in ipairs(results) do
-                        print("\t→ " .. colors.dim(colors.cyan(tostring(res))))
+                        log.info("\t→ " .. colors.blue(tostring(res)))
                     end
                 end
 

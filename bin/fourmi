@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 
-local colors   = require "term.colors"
+local log      = require "fourmi.log"
 local argparse = require "argparse"
 local lfs      = require "lfs"
 
@@ -58,7 +58,7 @@ local arguments = parser:parse()
 
 local function checkinvalid(condition, message)
     if condition then
-        print(colors.red(message))
+        log.err(message)
 
         os.exit(1)
     end
@@ -90,9 +90,9 @@ end
 -- Run a plan
 local function runPlan(plan)
     xpcall(plan, function(err)
-        print(colors.red(
+        log.err(
             "Plan `" .. plan.__name .. "` failed with error:\n" .. err
-        ))
+        )
     end, arguments)
 end
 

@@ -6,6 +6,7 @@
 -- @copyright Benoit Giannangeli 2019
 
 local task   = require "fourmi.task"
+local log    = require "fourmi.log"
 local colors = require "term.colors"
 local lfs    = require "lfs"
 
@@ -29,13 +30,14 @@ function builtins.sh(program, ...)
             or sarg
     end
 
+    arguments = table.concat(arguments, " ")
+
     local command =
-        program
-        .. " " .. table.concat(arguments, " ")
+        program .. " " .. arguments
 
     local stderr = os.tmpname()
 
-    print(colors.magenta("🐢 " .. command))
+    log.sys(colors.bright(colors.magenta(program)) .. " " .. colors.magenta(arguments))
 
     -- spawn program and yield when waitpid returns
     local ok, exit, status = os.execute(
@@ -173,11 +175,11 @@ builtins.task.sh = function(command, ...)
             local ok, message = builtins.sh(command, table.unpack(args))
 
             if ok then
-                print(colors.yellow(tsk.properties.successMessage or command .. " succeeded"))
+                log.warn(tsk.properties.successMessage or command .. " succeeded")
             elseif not tsk.options.ignoreError then
                 error(colors.yellow(tsk.properties.failureMessage or command .. " failed: " .. message))
             else
-                print(colors.yellow(tsk.properties.failureMessage or command .. " failed"))
+                log.warn(tsk.properties.failureMessage or command .. " failed")
             end
 
             return ok, message
@@ -212,7 +214,7 @@ builtins.task.mv = task "mv"
         local ok, err = os.rename(file, dest)
 
         if ok then
-            print(colors.yellow("Moved `" .. file .. "` to `" .. dest .. "`"))
+            log.warn("Moved `" .. file .. "` to `" .. dest .. "`")
             return dest
         else
             error(err)
@@ -234,18 +236,18 @@ builtins.task.empty = task "empty"
                     local ok, err = os.remove(file)
 
                     if ok then
-                        print(colors.yellow("\t`" .. file .. "` removed"))
+                        log.warn("\t`" .. file .. "` removed")
                         count = count + 1
                     else
-                        print(colors.red("\tCould not remove `" .. file .. "`: " .. err))
+                        log.err("\tCould not remove `" .. file .. "`: " .. err)
                     end
                 end
             end
 
             if count > 0 then
-                print(colors.yellow("Removed " .. count .. " files in `" .. dir .. "`"))
+                log.warn("Removed " .. count .. " files in `" .. dir .. "`")
             else
-                print(colors.green "Nothing to remove")
+                log.success("Nothing to remove")
             end
         else
             error("`" .. dir .. "` is not a directory")

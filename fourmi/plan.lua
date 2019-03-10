@@ -6,6 +6,7 @@
 -- @copyright Benoit Giannangeli 2019
 
 local colors = require "term.colors"
+local log    = require "fourmi.log"
 
 local planMt = {
 
@@ -17,8 +18,8 @@ local planMt = {
         local time = os.clock()
 
         if not arguments.quiet then
-            print(
-                colors.green("\n🐜 Running plan "
+            log.info("\n"
+                .. colors.green("🐜 Running plan "
                 .. colors.bright(colors.blue(self.__name)))
                 .. colors.dim(colors.cyan(
                     (self.__description and "\n" .. self.__description .. ": " or "")
@@ -34,14 +35,14 @@ local planMt = {
         local results = {self.__task:run()}
 
         if not arguments.quiet then
-            print(
+            log.info(
                 "\n🐜 Plan " .. colors.bright(colors.blue(self.__name)) .. " completed with "
                 .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
                 .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
             )
 
             for _, res in ipairs(results) do
-                print("\t→ " .. colors.dim(colors.cyan(tostring(res))))
+                log.info("\t→ " .. colors.dim(colors.cyan(tostring(res))))
             end
         end
     end,
