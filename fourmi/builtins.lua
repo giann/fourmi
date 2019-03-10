@@ -18,9 +18,11 @@ local builtins = {}
 -- @treturn[1] boolean true if command succeded
 -- @treturn[2] string message in case of failure
 function builtins.sh(program, ...)
+    program = builtins.__(program)
+
     local arguments = {...}
     for i, arg in ipairs(arguments) do
-        local sarg = tostring(arg)
+        local sarg = builtins.__(tostring(arg))
 
         arguments[i] = sarg:match "[^%s]%s+[^%s]"
             and string.format("%q", sarg)
@@ -74,25 +76,14 @@ end
 
 ---
 -- String interpolation helper
--- Repalce `${VARIABLE}` with `os.getenv "VARIABLE"`,
--- `#{variable}` with `variable` in `context` or caller locals or `_G`
--- `~` with `os.getenv "HOME"`
+--   - `${VARIABLE}` -> `os.getenv "VARIABLE"`
+--   - `#{variable}` -> `variable` in `context` or caller locals or `_G`
+--   - `~` -> `os.getenv "HOME"`
+--   - `@{variable}` -> `_G.__fourmi_vars[variable]`
 -- @tparam string str String to interpolate
 -- @tparam[opt] table context Table in which to search variables to interpolates
 -- @treturn string
 function builtins.__(str, context)
-    -- Interpolate environment variables
-    local env
-    repeat
-        env = str:match "%${([A-Za-z_]+[A-Za-z_0-9]*)}"
-
-        str = env
-            and str:gsub("%${" .. env .. "}", os.getenv(env) or "")
-            or str
-    until not env
-
-    -- Interpolate variables
-
     -- No context provided, build one from caller locals
     if not context then
         context = {}
@@ -109,19 +100,61 @@ function builtins.__(str, context)
         until not key
     end
 
-    -- Interpolate ~
-    str = str:gsub("~", os.getenv "HOME")
+    -- Interpolate ${}
+    local env
+    repeat
+        env = str:match "%${([A-Za-z_]+[A-Za-z_0-9]*)}"
 
+        str = env
+            and str:gsub("%${" .. env .. "}", os.getenv(env) or "")
+            or str
+    until not env
+
+    -- Interpolate #{}
     local var
     repeat
         var = str:match "#{([A-Za-z_]+[A-Za-z_0-9]*)}"
 
+        local value = context[var]
+        if value == nil then
+            value = _G[var]
+        end
+        if value == nil then
+            value = ""
+        end
+
         str = var
-            and str:gsub("#{" .. var .. "}", tostring(context[var] or _G[var]))
+            and str:gsub("#{" .. var .. "}", tostring(value))
+            or str
+    until not var
+
+    -- Interpolate ~
+    str = str:gsub("~", os.getenv "HOME")
+
+    -- Interpolate @{}
+    var = nil
+    repeat
+        var = str:match "@{([A-Za-z_]+[A-Za-z_0-9]*)}"
+
+        local value = _G.__fourmi_vars[var]
+        if value == nil then
+            value = ""
+        end
+
+        str = var
+            and str:gsub("@{" .. var .. "}", tostring(value))
             or str
     until not var
 
     return str
+end
+
+---
+-- Set a fourmi variable
+-- @tparam string key
+-- @tparam string|number|boolean value
+function builtins.var(key, value)
+    _G.__fourmi_vars[key] = value
 end
 
 --- Builtin tasks
@@ -173,6 +206,7 @@ builtins.task.ls = task "ls"
 builtins.task.mv = task "mv"
     :description "Move a file"
     :perform(function(self, file)
+        file = builtins.__(file)
         local dest = builtins.__(self.options[1]) .. "/" .. file:match "([^/]*)$"
 
         local ok, err = os.rename(file, dest)

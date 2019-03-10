@@ -1,26 +1,32 @@
 -- Example fourmi.lua
 
-local fourmi   = require "fourmi"
 local builtins = require "fourmi.builtins"
-local plan     = fourmi.plan
-local task     = fourmi.task
+local plan     = require "fourmi.plan"
+local task     = require "fourmi.task"
 local __       = builtins.__
-local sh       = builtins.sh
+local empty    = builtins.task.empty
 local ls       = builtins.task.ls
 local mv       = builtins.task.mv
-local empty    = builtins.task.empty
 local outdated = builtins.task.outdated
+local sh       = builtins.sh
+local var      = builtins.var
+
+-- Define vars
+
+var("min", "luamin")
+var("src", "./fourmi")
+var("dest", __"~/tmp-code")
 
 -- Define tasks
 
 local minify = task "minify"
     :description "Minify lua files with luamin"
     :perform(function(self, file)
-        local minifiedFile = __"~/.fourmi/tmp/"
+        local minifiedFile = __"@{tmp}/"
             .. file
                 :match "([^/]*)$"
 
-        if not sh("luamin", "-f", file, ">", minifiedFile) then
+        if not sh("@{min}", "-f", file, ">", minifiedFile) then
             error("Could not create minified file at: " .. minifiedFile)
         end
 
@@ -43,14 +49,14 @@ return {
     plan "all"
         :description "Minify and gzip lua files"
         :task(
-            ls("./fourmi", "%.lua$")
-                * (outdated "~/tmp-code/#{original}.gz"
-                    & minify >> gzip >> mv "~/tmp-code")
+            ls("@{src}", "%.lua$")
+                * (outdated "@{dest}/#{original}.gz"
+                    & minify >> gzip >> mv "@{dest}")
         ),
 
     plan "clean"
         :description "Cleanup"
         :task(
-            empty "~/tmp-code"
+            empty "@{dest}"
         )
 }

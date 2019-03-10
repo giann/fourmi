@@ -54,6 +54,12 @@ local mytask = task "mytask"
 Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/fourmi/blob/master/example-fourmi.plan.lua):
 
 ```lua
+var("min", "luamin")
+var("src", "./fourmi")
+var("dest", __"~/tmp-code")
+
+-- ...
+
 return {
     -- Default plan
     plan "all"
@@ -62,11 +68,11 @@ return {
         -- Define its task
         :task(
             -- List files in `./fourmi` ending with `.lua`
-            ls("./fourmi", "%.lua$")
+            ls("@{src}", "%.lua$")
                 -- For each of them: if the gzipped file does not exist or is older than the original,
                 -- minify then gzip then move to `~/tmp-code`
-                * (outdated "~/tmp-code/#{original}.gz"
-                    & minify >> gzip >> mv "~/tmp-code")
+                * (outdated "@{dest}/#{original}.gz"
+                    & minify >> gzip >> mv "@{dest}")
         ),
 
     -- Clean plan
@@ -74,21 +80,23 @@ return {
         :description "Cleanup"
         :task(
             -- Remove all files from `~/tmp-code`
-            empty "~/tmp-code"
+            empty "@{dest}"
         )
 }
 ```
-
-<p align="center">
-    <img src="https://github.com/giann/fourmi/raw/master/assets/result.png" alt="fourmi">
-</p>
-
 
 If you don't want to use operators, you can use their aliases:
 - **`..`**: after
 - **`&`**: success
 - **`|`**: failure
 - **`>>`**: into
-- **`~`**: ouput
 - **`*`**: each
 - **`^`**: meet
+
+### `__` function
+
+`__(string, [context])` interpolates special special sequences in a string:
+- **`~`**: will be replaced with `$HOME`
+- **`${ENV}`**: will be replaced by the `ENV` environment variable
+- **`#{variable}`**: fourmi will look for `variable` in `context` or `_G` if none provided
+- **`@{fourmi_variable}`**: will be replaced by the `fourmi_variable` defined with `var(name, value)`

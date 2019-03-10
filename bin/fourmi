@@ -30,6 +30,11 @@ end
 -- Cleanup in case previous fourmi failed to do so
 cleanup()
 
+-- Initialize global table to hold fourmi's variable
+_G.__fourmi_vars = {
+    tmp = os.getenv "HOME" .. "/.fourmi/tmp"
+}
+
 -- Build parser
 local parser = argparse()
         :name "fourmi"
