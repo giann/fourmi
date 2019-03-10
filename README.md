@@ -45,10 +45,9 @@ local mytask = task "mytask"
 ### Operators
 
 - **`task1 .. task2`**: returns a new task that does `task1` then `task2`
-- **`task1 & task2`**: returns a new task that does `task2` if `task1` returns truthy value
+- **`task1 & task2`**: returns a new task that does `task2` has output, pipes it to `task2`
 - **`task1 | task2`**: returns a new task that does `task2` only if `task1` returns falsy value
 - **`task1 >> task2`**: returns a new task that pipes `task1` into `task2`
-- **`task1 ~ task2`**: returns a new task that, if `task1` has output, pipes it to `task2`
 - **`task1 * task2`**: returns a new task that does `task2` for all output of `task1`
 - **`task1 ^ (condition)`**: returns a new task that does `task1` if `condition` (expression or function to be evaluated) is true
 
@@ -66,7 +65,8 @@ return {
             ls("./fourmi", "%.lua$")
                 -- For each of them: if the gzipped file does not exist or is older than the original,
                 -- minify then gzip then move to `~/tmp-code`
-                * (outdated "~/tmp-code/#{original}.gz" & minify >> gzip >> mv "~/tmp-code")
+                * (outdated "~/tmp-code/#{original}.gz"
+                    & minify >> gzip >> mv "~/tmp-code")
         ),
 
     -- Clean plan

@@ -44,7 +44,8 @@ return {
         :description "Minify and gzip lua files"
         :task(
             ls("./fourmi", "%.lua$")
-                * (outdated "~/tmp-code/#{original}.gz" & minify >> gzip >> mv "~/tmp-code")
+                * (outdated "~/tmp-code/#{original}.gz"
+                    & minify >> gzip >> mv "~/tmp-code")
         ),
 
     plan "clean"

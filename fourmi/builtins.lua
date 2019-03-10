@@ -140,11 +140,11 @@ builtins.task.sh = function(command, ...)
             local ok, message = builtins.sh(command, table.unpack(args))
 
             if ok then
-                print(colors.yellow(tsk.options.successMessage or command .. " succeeded"))
+                print(colors.yellow(tsk.properties.successMessage or command .. " succeeded"))
             elseif not tsk.options.ignoreError then
-                error(colors.yellow(tsk.options.failureMessage or command .. " failed: " .. message))
+                error(colors.yellow(tsk.properties.failureMessage or command .. " failed: " .. message))
             else
-                print(colors.yellow(tsk.options.failureMessage or command .. " failed"))
+                print(colors.yellow(tsk.properties.failureMessage or command .. " failed"))
             end
 
             return ok, message
@@ -223,11 +223,14 @@ builtins.task.outdated = task "outdated"
     :description "Filter out up-to-date files"
     :property("quiet", true)
     :perform(function(self, original)
-        local dest = builtins.__(self.options[1], {
+        original = original or self.options[1]
+        local dest = original and self.options[1] or self.options[2]
+
+        dest = dest and builtins.__(dest, {
             original = original:match "([^/]*)$"
         })
 
-        if builtins.outdated(original, dest) then
+        if builtins.outdated(original or dest, original and dest or nil) then
             return original
         end
     end)
