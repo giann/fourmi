@@ -1,3 +1,5 @@
+-- fourmi -f example/mingzip.fourmi.plan.lua
+
 -- Example fourmi.lua
 
 local builtins = require "fourmi.builtins"
