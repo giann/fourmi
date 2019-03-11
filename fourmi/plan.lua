@@ -13,20 +13,17 @@ local planMt = {
     ---
     -- Run the plan
     -- @tparam plan self
-    -- @tparam table arguments List of arguments
-    __call = function(self, arguments)
+    __call = function(self)
         local time = os.clock()
 
-        if not arguments.quiet then
-            log.info("\n"
-                .. colors.green("🐜 Running plan "
-                .. colors.bright(colors.blue(self.__name)))
-                .. colors.dim(colors.cyan(
-                    (self.__description and "\n" .. self.__description .. ": " or "")
-                    .. self.__task.__name
-                ))
-            )
-        end
+        log.info("\n"
+            .. colors.green("🐜 Running plan "
+            .. colors.bright(colors.blue(self.__name)))
+            .. colors.dim(colors.cyan(
+                (self.__description and "\n" .. self.__description .. ": " or "")
+                .. self.__task.__name
+            ))
+        )
 
         if not self.task then
             error("Task is undefined for plan " .. self.__name)
@@ -34,16 +31,14 @@ local planMt = {
 
         local results = {self.__task:run()}
 
-        if not arguments.quiet then
-            log.info(
-                "\n🐜 Plan " .. colors.bright(colors.blue(self.__name)) .. " completed with "
-                .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
-                .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
-            )
+        log.info(
+            "\n🐜 Plan " .. colors.bright(colors.blue(self.__name)) .. " completed with "
+            .. colors.yellow(#results) .. " result" .. (#results > 1 and "s" or "")
+            .. " in " .. colors.yellow(string.format("%.03f", os.clock() - time) .. "s")
+        )
 
-            for _, res in ipairs(results) do
-                log.info("\t→ " .. colors.dim(colors.cyan(tostring(res))))
-            end
+        for _, res in ipairs(results) do
+            log.info("\t→ " .. colors.dim(colors.cyan(tostring(res))))
         end
     end,
 

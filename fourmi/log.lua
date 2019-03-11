@@ -30,7 +30,7 @@ local function put(_, channel, msg)
 
     local leading = msg:match "^(\n*)"
     msg = msg:gsub("^(\n*)", "")
-    msg = msg:gsub("\n", "\n" .. (" "):rep(#tm))
+    msg = msg:gsub("\n", "\n" .. tm)
 
     print(
         leading ..

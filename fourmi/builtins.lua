@@ -37,7 +37,7 @@ function builtins.sh(program, ...)
 
     local stderr = os.tmpname()
 
-    log.sys(colors.bright(colors.magenta(program)) .. " " .. colors.magenta(arguments))
+    log.sys("$ " .. colors.bright(colors.magenta(program)) .. " " .. colors.magenta(arguments))
 
     -- spawn program and yield when waitpid returns
     local ok, exit, status = os.execute(

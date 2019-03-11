@@ -1,6 +1,9 @@
 #!/usr/bin/env lua
 
 local log      = require "fourmi.log"
+local builtins = require "fourmi.builtins"
+local __       = builtins.__
+local var      = builtins.var
 local argparse = require "argparse"
 local lfs      = require "lfs"
 
@@ -97,6 +100,7 @@ local function runPlan(plan)
 end
 
 -- Run first target that matches a key in plan
+local plan
 local defaultPlan
 
 for _, target in ipairs(plans) do
@@ -105,21 +109,30 @@ for _, target in ipairs(plans) do
     end
 
     if arguments.plan == target.__name then
-        runPlan(target)
-
-        os.exit()
+        plan = target
+        break
     end
 end
 
-checkinvalid(not defaultPlan, "No matching plan")
+checkinvalid(not plan and not defaultPlan, "No matching plan")
 
--- Or run default target
-
--- Plan argument is now part of default plan's arguments
-if arguments.plan then
+-- If no plan provided, arguments.plan should be part of arguments.arguments
+if not plan then
     table.insert(arguments.arguments, 1, arguments.plan)
 end
 
-runPlan(defaultPlan)
+-- Overwrite vars with cli arguments
+for _, arg in ipairs(arguments.arguments) do
+    local key, value = arg:match "^([^=]*)=(.*)"
+
+    log.warn(__"Overwritten variable `#{key}` with `#{value}`", {
+        key = key,
+        value = value
+    })
+
+    var(key, value)
+end
+
+runPlan(plan or defaultPlan)
 
 cleanup()

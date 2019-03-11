@@ -54,6 +54,8 @@ local mytask = task "mytask"
 Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/fourmi/blob/master/example-fourmi.plan.lua):
 
 ```lua
+-- Define variables
+-- Those can be overwritten with cli arguments of the form `key=value`
 var {
     min  = "luamin",
     src  = "./fourmi",
