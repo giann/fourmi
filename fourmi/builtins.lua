@@ -87,7 +87,7 @@ end
 -- @treturn string
 function builtins.__(str, context)
     -- No context provided, build one from caller locals
-    if not context then
+    if not context and str:match "#{([A-Za-z_]+[A-Za-z_0-9]*)}" then
         context = {}
         local l = 1
         local key, value
@@ -117,17 +117,17 @@ function builtins.__(str, context)
     repeat
         var = str:match "#{([A-Za-z_]+[A-Za-z_0-9]*)}"
 
-        local value = context[var]
-        if value == nil then
-            value = _G[var]
-        end
-        if value == nil then
-            value = ""
-        end
+        if var then
+            local value = context[var]
+            if value == nil then
+                value = _G[var]
+            end
+            if value == nil then
+                value = ""
+            end
 
-        str = var
-            and str:gsub("#{" .. var .. "}", tostring(value))
-            or str
+            str = str:gsub("#{" .. var .. "}", tostring(value))
+        end
     until not var
 
     -- Interpolate ~
