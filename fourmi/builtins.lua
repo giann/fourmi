@@ -153,10 +153,20 @@ end
 
 ---
 -- Set a fourmi variable
--- @tparam string key
+-- @tparam string|table key or table of (key, value)
 -- @tparam string|number|boolean value
 function builtins.var(key, value)
-    _G.__fourmi_vars[key] = value
+    if type(key) ~= "table" then
+        _G.__fourmi_vars[key] = type(value) == "string"
+            and builtins.__(value)
+            or value
+    else
+        for k, v in pairs(key) do
+            _G.__fourmi_vars[k] = type(v) == "string"
+                and builtins.__(v)
+                or v
+        end
+    end
 end
 
 --- Builtin tasks
@@ -176,7 +186,7 @@ builtins.task.sh = function(command, ...)
 
             if ok then
                 log.warn(tsk.properties.successMessage or command .. " succeeded")
-            elseif not tsk.options.ignoreError then
+            elseif not tsk.properties.ignoreError then
                 error(colors.yellow(tsk.properties.failureMessage or command .. " failed: " .. message))
             else
                 log.warn(tsk.properties.failureMessage or command .. " failed")
@@ -217,7 +227,7 @@ builtins.task.mv = task "mv"
             log.warn("Moved `" .. file .. "` to `" .. dest .. "`")
             return dest
         else
-            error(err)
+            error("Could not move `" .. file .. "` to `" .. dest .. "`: " .. err)
         end
     end)
 

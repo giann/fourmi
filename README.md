@@ -54,9 +54,11 @@ local mytask = task "mytask"
 Here's an commented excerpt of [`fourmi.plan.lua`](https://github.com/giann/fourmi/blob/master/example-fourmi.plan.lua):
 
 ```lua
-var("min", "luamin")
-var("src", "./fourmi")
-var("dest", __"~/tmp-code")
+var {
+    min  = "luamin",
+    src  = "./fourmi",
+    dest = "~/tmp-code",
+}
 
 -- ...
 

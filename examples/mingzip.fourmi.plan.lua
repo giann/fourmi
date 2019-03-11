@@ -15,9 +15,11 @@ local var      = builtins.var
 
 -- Define vars
 
-var("min", "luamin")
-var("src", "./fourmi")
-var("dest", __"~/tmp-code")
+var {
+    min  = "luamin",
+    src  = "./fourmi",
+    dest = "~/tmp-code",
+}
 
 -- Define tasks
 
