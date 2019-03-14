@@ -20,7 +20,7 @@ local planMt = {
             .. colors.green("🐜 Running plan "
             .. colors.bright(colors.blue(self.__name)))
             .. colors.dim(colors.cyan(
-                (self.__description and "\n" .. self.__description .. ": " or "")
+                (self.__description and "\n" .. self.__description .. ": " or " ")
                 .. self.__task.__name
             ))
         )

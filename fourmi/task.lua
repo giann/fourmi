@@ -5,8 +5,11 @@
 -- @license MIT
 -- @copyright Benoit Giannangeli 2019
 
-local colors = require "term.colors"
-local log    = require "fourmi.log"
+local colors  = require "term.colors"
+local log     = require "fourmi.log"
+local utils   = require "fourmi.utils"
+local flatten = utils.flatten
+local __      = utils.__
 
 local function parallel(functions, ...)
     error "NYI"
@@ -20,11 +23,24 @@ local taskMt
 -- @treturn task New task
 local function task(name)
     return setmetatable({
-        __name     = name,
-        run        = function() end,
-        options    = {},
-        properties = {}
+        __name        = name,
+        run           = function() end,
+        options       = {},
+        properties    = {},
+        deps          = {},
     }, taskMt)
+end
+
+--- Lefts out options which are set via __call
+local function clone(tsk)
+    local new = task(tsk.__name)
+        :description(tsk.__description)
+        :property(tsk.properties)
+        :perform(tsk.run)
+
+    new.deps = tsk.deps
+
+    return new
 end
 
 taskMt = {
@@ -165,13 +181,15 @@ taskMt = {
     end,
 
     ---
-    -- Set options
+    -- Returns a clone task with given options
     -- @tparam task self
     -- @param ... Task input
     __call = function(self, ...)
-        self.options = {...}
+        local tsk = clone(self)
 
-        return self
+        tsk.options = {...}
+
+        return tsk
     end,
 
     __index = {
@@ -212,6 +230,19 @@ taskMt = {
                     )
                 end
 
+                -- Running dependencies
+                for _, dep in ipairs(self.deps) do
+                    local t = _G.__fourmi.deps[dep]
+
+                    if t then
+                        t:run()
+                    else
+                        require "croissant.debugger"()
+                        error("Could not satisfy dependency: " .. dep)
+                    end
+                end
+
+                -- Running the task
                 local results = {fn(self, ...)}
 
                 if not self.properties.quiet then
@@ -248,6 +279,35 @@ taskMt = {
             return self
         end,
 
+        ---
+        -- Register task as producing `file`
+        -- @tparam task self
+        -- @tparam string file
+        file = function(self, file)
+            file = __(file)
+
+            self.__file = file
+            _G.__fourmi.deps[file] = self
+
+            return self
+        end,
+
+        ---
+        -- Inject file dependencies
+        -- @tparam task self
+        -- @tparam table deps
+        requires = function(self, deps)
+            assert(
+                type(deps) == "table" or type(deps) == "string",
+                "Dependency must be a table or a string"
+            )
+
+            self.deps = flatten(deps)
+
+            return self
+        end,
+
+        -- Aliases
         prop = function(self, ...)
             return self:property(...)
         end,
@@ -261,9 +321,9 @@ taskMt = {
         end,
     },
 
-    __tostring = function(self)
-        return "Task " .. self.__name
-    end
+    -- __tostring = function(self)
+    --     return "Task " .. self.__name
+    -- end
 }
 
 -- Non operators aliases

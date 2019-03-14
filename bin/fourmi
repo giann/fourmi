@@ -33,9 +33,17 @@ end
 -- Cleanup in case previous fourmi failed to do so
 cleanup()
 
--- Initialize global table to hold fourmi's variable
-_G.__fourmi_vars = {
-    tmp = os.getenv "HOME" .. "/.fourmi/tmp"
+-- Initialize global table to hold fourmi's information
+_G.__fourmi = {
+    -- Variables
+    vars = {
+        tmp = os.getenv "HOME" .. "/.fourmi/tmp"
+    },
+
+    -- Dependencies
+    deps = {
+        -- file = task
+    }
 }
 
 -- Build parser
