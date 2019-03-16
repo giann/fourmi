@@ -237,8 +237,7 @@ taskMt = {
                     if t then
                         t:run()
                     else
-                        require "croissant.debugger"()
-                        error("Could not satisfy dependency: " .. dep)
+                        error("Could not satisfy dependency: " .. tostring(dep))
                     end
                 end
 

@@ -87,20 +87,25 @@ end
 -- @tparam string|number|boolean value
 function builtins.var(key, value)
     if type(key) ~= "table" then
-        _G.__fourmi.vars[key] = type(value) == "string"
-            and __(value)
-            or value
+        if _G.__fourmi.vars[key] ~= nil then
+            log.debug(__"Overwriting `#{key}` with: `#{value}`")
+        end
+
+        _G.__fourmi.vars[key] = value
     else
         for k, v in pairs(key) do
-            _G.__fourmi.vars[k] = type(v) == "string"
-                and __(v)
-                or v
+            if _G.__fourmi.vars[k] ~= nil then
+                log.debug(__"Overwriting `#{k}` with: `#{v}`")
+            end
+
+            _G.__fourmi.vars[k] = v
         end
     end
 end
 
 function builtins.getvar(key)
-    return _G.__fourmi.vars[key]
+    local var = _G.__fourmi.vars[key]
+    return type(var) == "string" and __(var) or var
 end
 
 --- Builtin tasks

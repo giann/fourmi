@@ -34,6 +34,8 @@ Task are relatively small jobs that you can combine using operators.
 ```lua
 local mytask = task "mytask"
     :description "A short description of what it does"
+    :file "output.o"
+    :requires { "file1.x", "file2.x" }
     :property("propertykey", propertyvalue)
     :perform(function(self, ...)
         -- Do something with ...

@@ -16,7 +16,7 @@ local function flatten(t, flat, seen)
 end
 
 ---
--- String interpolation helper
+-- Recursive string interpolation helper
 --   - `${VARIABLE}` -> `os.getenv "VARIABLE"`
 --   - `#{variable}` -> `variable` in `context` or caller locals or `_G`
 --   - `~` -> `os.getenv "HOME"`
@@ -66,7 +66,18 @@ local function __(str, context)
             end
 
             if type(value) == "table" then
-                value = table.concat(flatten(value), " ")
+                local tmp = {}
+                for _, v in ipairs(flatten(value)) do
+                    table.insert(
+                        tmp,
+                        type(v) == "string"
+                            and __(v)
+                            or v
+                    )
+                end
+                value = table.concat(tmp, " ")
+            elseif type(value) == "string" then
+                value = __(value)
             end
 
             str = str:gsub("#{" .. var .. "}", tostring(value))
@@ -88,7 +99,18 @@ local function __(str, context)
             end
 
             if type(value) == "table" then
-                value = table.concat(flatten(value), " ")
+                local tmp = {}
+                for _, v in ipairs(flatten(value)) do
+                    table.insert(
+                        tmp,
+                        type(v) == "string"
+                            and __(v)
+                            or v
+                    )
+                end
+                value = table.concat(tmp, " ")
+            elseif type(value) == "string" then
+                value = __(value)
             end
 
             str = var

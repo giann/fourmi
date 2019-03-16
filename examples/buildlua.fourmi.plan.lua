@@ -9,6 +9,7 @@ local var      = builtins.var
 local getvar   = builtins.getvar
 local __       = builtins.__
 local outdated = builtins.task.outdated
+local sht      = builtins.task.sh
 
 var { -- User overridable settings
     PLAT       = "none",
@@ -72,7 +73,6 @@ var {
 
     AR      = "ar rcu",
     RANLIB  = "ranlib",
-    RM      = "rm -f",
 }
 
 var {
@@ -137,6 +137,14 @@ var {
     }
 }
 
+var {
+    ALL_O = {
+        getvar "BASE_O",
+        getvar "LUA_O",
+        getvar "LUAC_O",
+    },
+}
+
 task "LUA_A"
     :file "@{LUA_A}"
     :requires {
@@ -191,7 +199,8 @@ task "LUAC_T"
         return __"@{LUAC_T}"
     end)
 
-local all = task "all"
+local build = task "build"
+    :description "Builds Lua"
     :requires(getvar "ALL_T")
     :perf(function(self)
         log.success "All done!"
@@ -370,8 +379,20 @@ local plat = task "plat"
     end)
 
 return {
-    plan "build"
+    plan "all"
         :task(
-            plat .. all
+            plat .. build
+        ),
+
+    plan "build"
+        :description "Build Lua"
+        :task(
+            build
+        ),
+
+    plan "clean"
+        :description "Cleanup"
+        :task(
+            sht("rm -f", "@{ALL_T} @{ALL_O}")
         )
 }
