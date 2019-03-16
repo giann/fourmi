@@ -108,6 +108,11 @@ function builtins.getvar(key)
     return type(var) == "string" and __(var) or var
 end
 
+builtins.chdir = function(path)
+    log.warn("Current directory changed to: " .. colors.green(path))
+    return lfs.chdir(path)
+end
+
 --- Builtin tasks
 builtins.task = {}
 

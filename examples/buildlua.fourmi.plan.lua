@@ -1,3 +1,4 @@
+-- luarocks install sirocco
 -- fourmi -f example/buildlua.fourmi.plan.lua
 
 local builtins = require "fourmi.builtins"
@@ -6,6 +7,7 @@ local task     = require "fourmi.task"
 local log      = require "fourmi.log"
 local sh       = builtins.sh
 local var      = builtins.var
+local chdir    = builtins.chdir
 local getvar   = builtins.getvar
 local __       = builtins.__
 local outdated = builtins.task.outdated
@@ -223,6 +225,15 @@ local compile = task "compile"
             return original
         end)
 
+local getlua = task "getlua"
+    :description "Download and unzip Lua"
+    :perform(function(self)
+        if sh("wget", "https://www.lua.org/ftp/lua-5.3.5.tar.gz")
+            and sh("tar xvzf", "lua-5.3.5.tar.gz") then
+            return chdir "lua-5.3.5/src" and "lua-5.3.5/src"
+        end
+    end)
+
 -- luacheck: push ignore 631
 for file, deps in pairs {
     ["lapi.o"]     = { "lapi.c",     "lprefix.h",  "lua.h",      "luaconf.h",  "lapi.h",     "llimits.h",
@@ -381,7 +392,13 @@ local plat = task "plat"
 return {
     plan "all"
         :task(
-            plat .. build
+            getlua .. plat .. build
+        ),
+
+    plan "getlua"
+        :description "Get Lua"
+        :task(
+            getlua
         ),
 
     plan "build"
